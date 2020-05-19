@@ -29,12 +29,36 @@ struct symbol_info {
      vector<string> ref;
 
 };
+string locctr;
+map<string,opcode_info> OPTAB;
+map<string,reg_info> REGISTER;
+map<string,symbol_info> SYMTAB;
 
-//hexa locctr;
-typedef string mnemonic,symbol,direct;
-map<mnemonic,opcode_info> OPTAB;
-map<mnemonic,reg_info> REGISTER;
-map<symbol,symbol_info> SYMTAB;
+void incrmtTheCntr(string opCode , string opr){
+	if(opCode[0] == '+'){
+        locctr = toHex(toDec(locctr) + 4);
+        return;
+	}
+		
+	if(OPTAB.find(opCode)!= OPTAB.end())
+		locctr = toHex(toDec(locctr) + OPTAB[opCode].format);
+		
+
+	if(opCode == "WORD") 
+        locctr = toHex(toDec(locctr) + 3);
+            
+	else if(opCode == "RESW")  
+        locctr = toHex(toDec(locctr) + 3*(atoi(opr.c_str())));
+       
+	else if(opCode == "RESB")  
+        locctr = toHex(toDec(locctr) + atoi(opr.c_str()));
+     
+	else if(opCode == "BYTE") {
+		int len = opr.size()-3;
+		if(opr[0] == 'X') len /= 2;
+		locctr = toHex(toDec(locctr) + len);
+	}
+}
 
 string toHex(int a) {
     string lookup = "0123456789ABCDEF";
