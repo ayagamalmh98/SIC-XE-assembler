@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1589926561 source:c:\users\egypt_laptop\desktop\myassembler\operations.cpp
+	"operations.h"
+	<iostream>
+	<map>
+	<vector>
+
+1589926561 c:\users\egypt_laptop\desktop\myassembler\operations.h
+	<map>
+	<string>
+	<vector>
+

@@ -1,0 +1,3 @@
+Hello   +ADD      #87
+Hi      MUL       #5
+            
