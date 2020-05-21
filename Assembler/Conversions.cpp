@@ -1,26 +1,28 @@
 #include "Conversions.h"
-#include <string>
 
-void createMap(map<string, char> um){
-    um.insert(pair<string,char>("0000",'0'));
-    um.insert(pair<string,char>("0001",'1'));
-    um.insert(pair<string,char>("0010",'2'));
-    um.insert(pair<string,char>("0011",'3'));
-    um.insert(pair<string,char>("0100",'4'));
-    um.insert(pair<string,char>("0101",'5'));
-    um.insert(pair<string,char>("0110",'6'));
-    um.insert(pair<string,char>("0111",'7'));
-    um.insert(pair<string,char>("1000",'8'));
-    um.insert(pair<string,char>("1001",'9'));
-    um.insert(pair<string,char>("1010",'A'));
-    um.insert(pair<string,char>("1011",'B'));
-    um.insert(pair<string,char>("1100",'C'));
-    um.insert(pair<string,char>("1101",'D'));
-    um.insert(pair<string,char>("1110",'E'));
-    um.insert(pair<string,char>("1111",'F'));
+
+void Conversions::createMap(unordered_map<string, char>* um)
+{
+    (*um)["0000"] = '0';
+    (*um)["0001"] = '1';
+    (*um)["0010"] = '2';
+    (*um)["0011"] = '3';
+    (*um)["0100"] = '4';
+    (*um)["0101"] = '5';
+    (*um)["0110"] = '6';
+    (*um)["0111"] = '7';
+    (*um)["1000"] = '8';
+    (*um)["1001"] = '9';
+    (*um)["1010"] = 'A';
+    (*um)["1011"] = 'B';
+    (*um)["1100"] = 'C';
+    (*um)["1101"] = 'D';
+    (*um)["1110"] = 'E';
+    (*um)["1111"] = 'F';
 }
 
-string convertBinToHex(string bin, bool add){
+string Conversions::convertBinToHex(string bin, bool add)
+{
     if (add) {
         string add = "";
         int size = bin.size() % 4;
@@ -55,8 +57,8 @@ string convertBinToHex(string bin, bool add){
         for (int i = 1; i <= (4 - len_right % 4) % 4; i++)
             bin = bin + '0';
     }
-    map<string, char> bin_hex_map;
-    createMap(bin_hex_map);
+    unordered_map<string, char> bin_hex_map;
+    createMap(&bin_hex_map);
     int i = 0;
     string hex = "";
     while (1)
@@ -74,7 +76,7 @@ string convertBinToHex(string bin, bool add){
     return hex;
 }
 
-string DecToHex(int num)
+string Conversions::DecToHex(int num)
 {
     map<int, char> m;
 
@@ -111,7 +113,7 @@ string DecToHex(int num)
 }
 
 
-int HexToDecimal(string hexVal)
+int Conversions::HexToDecimal(string hexVal)
 {
     int len = hexVal.length();
     int base = 1;
@@ -133,7 +135,7 @@ int HexToDecimal(string hexVal)
 }
 
 
-char* StringToChar(string s)
+char* Conversions::StringToChar(string s)
 {
     int n = s.length();
     char str[100];
@@ -144,9 +146,9 @@ char* StringToChar(string s)
     return str;
 }
 
-string CharToString(char* a)
+string Conversions::CharToString(char* a)
 {
-    int size = a.size();
+    int size = strlen(a);
     int i;
     string s = "";
     for (i = 0; i < size; i++) {
@@ -158,7 +160,7 @@ string CharToString(char* a)
 
 char flip(char c) { return (c == '0') ? '1' : '0'; }
 
-string neg(string bin)
+string Conversions::neg(string bin)
 {
     int n = bin.length();
     int i;
@@ -183,7 +185,7 @@ string neg(string bin)
     return twos;
 }
 
-string HexToBin(string hexdec)
+string Conversions::HexToBin(string hexdec)
 {
     long int i = 0;
     string out = "";
@@ -252,7 +254,7 @@ string HexToBin(string hexdec)
     return out;
 }
 
-string decimal_to_binary(int n) {
+string Conversions::decimal_to_binary(int n) {
     if (n < 0) { // check if negative and alter the number
         n = 256 + n;
     }

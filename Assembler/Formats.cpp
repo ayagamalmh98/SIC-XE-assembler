@@ -1,12 +1,13 @@
 #include "Formats.h"
-#include <string>
+
 
 int x = 0;
 int b = 0;
 int p = 0;
 int e = 0;
 
-string XBPE(){
+string Formats::XBPE()
+{
     string xbpe = "";
     xbpe += to_string(x);
     xbpe += to_string(b);
@@ -16,13 +17,14 @@ string XBPE(){
 }
 
 
-string Displacement(string TAOpeanrd, bool X, string Bcontent, bool BASE, string CurrentLOCCTR){
+string Formats::Displacement(string TAOpeanrd, bool X, string Bcontent, bool BASE, string CurrentLOCCTR)
+{
     int TA = HexToDecimal(TAOpeanrd);
     x = 0;
     if (X) {
         x = 1;
     }
-
+    
     int locctr = HexToDecimal(CurrentLOCCTR);
     int PC = locctr + 3;
     int displ = TA - PC;
@@ -50,12 +52,12 @@ string Displacement(string TAOpeanrd, bool X, string Bcontent, bool BASE, string
 }
 
 
-string Format2()
+string Formats::Format2()
 {
 	return string();
 }
 
-string Format3(string TAOpeanrd, bool X, string Bcontent, bool BASE, string CurrentLOCCTR)
+string Formats::Format3(string TAOpeanrd, bool X, string Bcontent, bool BASE, string CurrentLOCCTR)
 {
     string displacement = Displacement(TAOpeanrd, X, Bcontent, BASE, CurrentLOCCTR);
     string xbpe = XBPE();
@@ -64,19 +66,19 @@ string Format3(string TAOpeanrd, bool X, string Bcontent, bool BASE, string Curr
     return xbpeDisplacement;
 }
 
-string Format4()
+string Formats::Format4()
 {
 	return string();
 }
 
 
-string setup(string TAOpeanrd, bool X, string Bcontent, bool BASE, int format, string CurrentLOCCTR)
+string Formats::setup(string TAOpeanrd, bool X, string Bcontent, bool BASE, int format, string CurrentLOCCTR)
 {
     if (format == 2)
     {
         return Format2();
     }
-    else if (format == 3)
+    else if (format == 3) 
     {
         e = 0;
         return Format3(TAOpeanrd, X, Bcontent, BASE, CurrentLOCCTR);

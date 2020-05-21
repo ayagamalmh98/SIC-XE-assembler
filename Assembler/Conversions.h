@@ -5,7 +5,10 @@
 
 using namespace std;
 
-        void createMap(map<string, char> um);
+class Conversions
+{
+    public:
+        void createMap(unordered_map<string, char>* um);
         string convertBinToHex(string bin, bool add);
         string DecToHex(int n);
         int HexToDecimal(string hexVal);
@@ -14,5 +17,5 @@ using namespace std;
         string neg(string bin);
         string HexToBin(string hexdec);
         string decimal_to_binary(int n);
-
+};
 

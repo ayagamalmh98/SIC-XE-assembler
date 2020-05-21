@@ -1,7 +1,7 @@
 #include "ObjectCode.h"
-#include <vector>
-#include "Conversions.h"
-string objectCode(int format, string CurrentLOCCTR, string B,bool BASE, string opCode, vector<string>operand, char typeOfOperand)
+
+
+string ObjectCode::objectCode(int format, string CurrentLOCCTR, string B,bool BASE, string opCode, string operand[], char typeOfOperand)
 {
 	string ObjectCode = "";
 	bool X = false;
@@ -53,7 +53,7 @@ string objectCode(int format, string CurrentLOCCTR, string B,bool BASE, string o
 				//objectCode=opCode(hex)+'0000'
 			}
 		}
-
+		
 		string xbpeDisplacementHex = setup(TA, X, B, BASE, format, CurrentLOCCTR);
 		string opni = opCode + ni;
 		string opniHex = convertBinToHex(opni,false);
@@ -78,3 +78,4 @@ string objectCode(int format, string CurrentLOCCTR, string B,bool BASE, string o
         }
     return oper;
     }
+
