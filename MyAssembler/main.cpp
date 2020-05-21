@@ -16,6 +16,35 @@ struct preobj {
     string objectCode = "";
 };
 
+string decTohexa(int n)
+{
+    char hexaDeciNum[100];
+    string s = "";
+    int i = 0;
+    while (n != 0)
+    {
+        int temp = 0;
+        temp = n % 16;
+        if (temp < 10)
+        {
+            hexaDeciNum[i] = temp + 48;
+            i++;
+        }
+        else
+        {
+            hexaDeciNum[i] = temp + 55;
+            i++;
+        }
+
+        n = n / 16;
+    }
+
+    for (int j = i - 1; j >= 0; j--) {
+        s=s+ hexaDeciNum[j];
+    }
+    return s;
+}
+
 struct symbol_info {
     string address;
     vector<string> reff;
@@ -185,7 +214,143 @@ public:
     }
 };
 
+void writefile(map<string, preobj> Map) {    //object file
+    
+    ofstream file_;
+    file_.open("myfile.txt");
+    map<string, preobj>::iterator it;
+    vector<string> arr; int i = 0;
+    for (it = Map.begin(); it != Map.end(); ++it) {
+        if (i == 0) {
+            i++;
+        }
+        else {
+            arr.push_back(it->first);
+            i++;
+        }
+    }
+
+    for (it = Map.begin(); it != Map.end(); ++it) {
+        if (Map[it->first].Operator == "start") {
+            file_ << "H ";        //printing location counter
+            file_ << Map[it->first].Label;
+            file_ << " 00";
+            file_ << Map[it->first].Operand;
+            file_ << " 00";
+            int num1, num2;
+            std::stringstream str_strm1(arr.at(0));
+            std::stringstream str_strm2(arr.at(Map.size() - 2));
+            std::stringstream str_hex1;
+            std::stringstream str_hex2;
+            str_strm1 >> std::hex >> num2;
+            str_strm2 >> std::hex >> num1;
+            int num = num1 - num2 + 1;
+            string s = decTohexa(num);
+            for (i = 0; i < 4 - s.size(); i++) {
+                file_ << "0";
+            }
+            file_ << s;
+            file_ << "\n";
+        }
+    }
+
+
+
+    it = Map.begin();
+    while (Map[it->first].Operator != "end") {
+        if (Map[it->first].Operator != "start") {
+            int counter = 0; int length = 0;
+            map<string, preobj>::iterator save = it;
+            while (save != Map.end() && Map[save->first].Operator != "start" && Map[save->first].Operator != "end" && (counter + Map[save->first].Format) <= 30) {
+                counter += Map[it->first].Format;
+                std::advance(save, 1);
+            }
+            cout << counter << endl;
+            length = counter; counter = 0;
+            if (it != Map.end() && Map[it->first].Operator != "start" && Map[it->first].Operator != "end" && (counter + Map[it->first].Format) <= 30) {
+                file_ << "T 00";
+                file_ << it->first;
+                file_ << " ";
+                if (decTohexa(length).size() < 2) {
+                    file_ << "0";
+                }
+                file_ << decTohexa(length);
+                file_ << " ";
+                file_ << Map[it->first].Opcode;
+                counter += Map[it->first].Format;
+                std::advance(it, 1);
+            }
+            while (it != Map.end() && Map[it->first].Operator != "start" && Map[it->first].Operator != "end" && (counter + Map[it->first].Format) <= 30) {
+                file_ << " ";
+                file_ << Map[it->first].Opcode;
+                counter += Map[it->first].Format;
+                std::advance(it, 1);
+            }
+            file_ << "\n";
+        }
+        else {
+            std::advance(it, 1);
+        }
+
+    }
+
+    it = Map.begin();
+    string raddr = it->first;
+    while (it != Map.end()) {
+
+        if (Map[it->first].Operator == "end") {
+            file_ << "E 00";
+            if (Map[it->first].Operand == "") {
+                file_ << raddr;
+            }
+            else {
+                file_ << Map[it->first].Operand;
+            }
+            break;
+        }
+        else {
+            it++;
+        }
+
+    }
+
+    file_.close();
+    std::cin.get();
+}
+
 int main() {
+    map<string, preobj> Map;
+    struct preobj ob = { "copy","start","1000","141033",3 };
+    Map.insert(std::pair<string, preobj>("", ob));
+    ob = { "first","stl","retadd","141033",3 };
+    Map.insert(std::pair<string, preobj>("1000", ob));
+    ob = { "cloop","jsub","retadd","482039",3 };
+    Map.insert(std::pair<string, preobj>("1003", ob));
+    ob = { "","lda","retadd","001036",3 };
+    Map.insert(std::pair<string, preobj>("1006", ob));
+    ob = { "","comp","zero","281030",3 };
+    Map.insert(std::pair<string, preobj>("1009", ob));
+    ob = { "","jeq","endfile","301015",3 };
+    Map.insert(std::pair<string, preobj>("100C", ob));
+    ob = { "","jsub","retadd","4820361",3 };
+    Map.insert(std::pair<string, preobj>("100F", ob));
+    ob = { "","j","cloop","3C1003",3 };
+    Map.insert(std::pair<string, preobj>("1012", ob));
+    ob = { "endfile","lda","retadd","00102A",3 };
+    Map.insert(std::pair<string, preobj>("1015", ob));
+    ob = { "","sta","buffer","0C1039",3 };
+    Map.insert(std::pair<string, preobj>("1018", ob));
+    ob = { "","lda","three","00102D",3 };
+    Map.insert(std::pair<string, preobj>("101B", ob));
+    ob = { "","sta","length","0C1036",3 };
+    Map.insert(std::pair<string, preobj>("101E", ob));
+    ob = { "","jsub","length","482061",3 };
+    Map.insert(std::pair<string, preobj>("1021", ob));
+    ob = { "","end","1000","",3 };
+    Map.insert(std::pair<string, preobj>("1024", ob));
+
+    writefile(Map);
+    
     pass1 e;
     e.readFile("assembler.txt");
    /* ObjectCode k;
