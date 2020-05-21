@@ -3,17 +3,25 @@
 #include <iterator>
 #include <map>
 #include <vector>
+#include <cstring>
+#include <cstdlib>
+#include <string>
+#include <D:\Assemblerproject\Conversions.h>
+#include<sstream>
 #include "ObjectCode.h"
 #include "convert.h"
 #include "operations.h"
+
 using namespace std;
 
-
-struct preobj {
-    string Label = "";
-    string Operator = "";
-    string Operand = "";
-    string objectCode = "";
+struct preobj
+{
+    string Label;
+    string Operator;
+    string Operand;
+    string Opcode;
+    int Format;
+    string objectCode;
 };
 
 string decTohexa(int n)
