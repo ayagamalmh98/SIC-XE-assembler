@@ -9,6 +9,11 @@ class ObjectCode : public Formats
     public:
         string objectCode(int format, string CurrentLOCCTR, string B, bool BASE, string opCode, vector<string> operand, char typeOfOperand);
         vector<string> getOperands(string exp);
+        string generateNI(char typeOfOperand);
+        string generateTA(vector<string> operand);
+
+    private:
+        bool X;
 
 };
 

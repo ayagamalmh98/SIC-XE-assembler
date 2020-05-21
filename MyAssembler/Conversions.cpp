@@ -265,3 +265,20 @@ string Conversions::decimal_to_binary(int n) {
     }
     return result;
 }
+
+string Conversions::Format4Hex(string TAOpeanrd)
+{
+    string add = "";
+    int k = TAOpeanrd.length();
+    if (k >= 5) {
+        return TAOpeanrd;
+    }
+    int check = TAOpeanrd.length() % 5;
+    check = 5 - check;
+    while (check != 0) {
+        check--;
+        add += "0";
+    }
+    TAOpeanrd = add + TAOpeanrd;
+    return TAOpeanrd;
+}

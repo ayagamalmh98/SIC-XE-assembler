@@ -66,9 +66,13 @@ string Formats::Format3(string TAOpeanrd, bool X, string Bcontent, bool BASE, st
     return xbpeDisplacement;
 }
 
-string Formats::Format4()
+string Formats::Format4(string TAOpeanrd)
 {
-	return string();
+    string TA = Format4Hex(TAOpeanrd);
+    string xbpe = XBPE();
+    string xbpeHex = convertBinToHex(xbpe, false);
+    string xbpeTA = xbpeHex + TA;
+	return xbpeTA;
 }
 
 
@@ -85,6 +89,12 @@ string Formats::setup(string TAOpeanrd, bool X, string Bcontent, bool BASE, int 
     }
     else if (format == 4) {
         e = 1;
-        return Format4();
+        x = 0;
+        b = 0;
+        p = 0;
+        if (X) {
+            x = 1;
+        }
+        return Format4(TAOpeanrd);
     }
 }

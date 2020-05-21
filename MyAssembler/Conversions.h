@@ -15,4 +15,5 @@ class Conversions
         string neg(string bin);
         string HexToBin(string hexdec);
         string decimal_to_binary(int n);
+        string Format4Hex(string TAOpeanrd);
 };

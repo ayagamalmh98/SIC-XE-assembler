@@ -114,6 +114,7 @@ public:
                 bool BASE = false;
                 string B = "";
                 info.objectCode = objectCode(Format, locctr, B, BASE, Opcode, getOperands(info.Operand), type);
+                cout << info.objectCode << endl;
                 table.insert(pair<string, preobj>(locctr, info));
                 locctr = toHex(toDec(locctr) + Format);
             }
@@ -187,5 +188,11 @@ public:
 int main() {
     pass1 e;
     e.readFile("assembler.txt");
+   /* ObjectCode k;
+    vector<string> data;
+    data.push_back("RDREC");
+    data.push_back("1036");
+    string o = k.objectCode(4,"","",false,"48",data,' ');
+    cout<<o<<endl;*/
     return 0;
 }
