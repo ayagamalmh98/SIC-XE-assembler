@@ -1,0 +1,64 @@
+# depslib dependency file v1.0
+1590007726 source:c:\users\ena\desktop\assembler\operations.cpp
+	"operations.h"
+	<iostream>
+	<map>
+	<vector>
+
+1590018052 c:\users\ena\desktop\assembler\operations.h
+	<iostream>
+	<fstream>
+	<iterator>
+	<map>
+	"operations.h"
+	<vector>
+
+1589948153 c:\users\ena\desktop\assembler\object_code.h
+	<string>
+	<iostream>
+	<fstream>
+	<iterator>
+	<map>
+	"object_code.h"
+	"convert.h"
+	"operations.h"
+	<vector>
+
+1590018024 c:\users\ena\desktop\assembler\convert.h
+	<iostream>
+	<fstream>
+	<iterator>
+	<map>
+	<vector>
+
+1589948133 source:c:\users\ena\desktop\assembler\object_code.cpp
+	"object_code.h"
+	<string>
+	<iostream>
+	<fstream>
+	<iterator>
+	<map>
+	"object_code.h"
+	"convert.h"
+	"operations.h"
+	<vector>
+
+1590017973 source:c:\users\ena\desktop\assembler\convert.cpp
+	"convert.h"
+	<string>
+	<iostream>
+	<fstream>
+	<iterator>
+	<map>
+	<vector>
+
+1590009994 source:c:\users\ena\desktop\assembler\main.cpp
+	<iostream>
+	<fstream>
+	<iterator>
+	<map>
+	"object_code.h"
+	"convert.h"
+	"operations.h"
+	<vector>
+
