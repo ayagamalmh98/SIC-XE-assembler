@@ -1,7 +1,7 @@
 #include "Conversions.h"
 
 
-void Conversions::createMap(unordered_map<string, char>* um)
+void Conversions::createMap(map<string, char>* um)
 {
     (*um)["0000"] = '0';
     (*um)["0001"] = '1';
@@ -57,7 +57,7 @@ string Conversions::convertBinToHex(string bin, bool add)
         for (int i = 1; i <= (4 - len_right % 4) % 4; i++)
             bin = bin + '0';
     }
-    unordered_map<string, char> bin_hex_map;
+    map<string, char> bin_hex_map;
     createMap(&bin_hex_map);
     int i = 0;
     string hex = "";

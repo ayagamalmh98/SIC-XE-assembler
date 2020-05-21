@@ -1,14 +1,12 @@
 #pragma once
-#include <unordered_map>
 #include <map>
 #include <iostream>
-
 using namespace std;
 
 class Conversions
 {
     public:
-        void createMap(unordered_map<string, char>* um);
+        void createMap(map<string, char>* um);
         string convertBinToHex(string bin, bool add);
         string DecToHex(int n);
         int HexToDecimal(string hexVal);
@@ -18,4 +16,3 @@ class Conversions
         string HexToBin(string hexdec);
         string decimal_to_binary(int n);
 };
-

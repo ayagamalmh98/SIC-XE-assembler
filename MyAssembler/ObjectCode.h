@@ -7,7 +7,8 @@ using namespace std;
 class ObjectCode : public Formats
 {
     public:
-        string objectCode(int format, string CurrentLOCCTR, string Bcontent, bool BASE, string opCode, string operand[], char typeOfOperand);
+        string objectCode(int format, string CurrentLOCCTR, string B, bool BASE, string opCode, vector<string> operand, char typeOfOperand);
+        vector<string> getOperands(string exp);
 
 };
 

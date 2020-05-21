@@ -1,7 +1,10 @@
 #ifndef OPERATIONS
 #define OPERATIONS
+#include <iostream>
+#include <fstream>
+#include <iterator>
 #include <map>
-#include <string>
+#include "operations.h"
 #include <vector>
 using namespace std;
 
@@ -10,4 +13,3 @@ map<string, string> getopcode();
 vector<string> noSpace(string line);
 
 #endif // OPERATIONS
-

@@ -4,9 +4,10 @@
 #include <vector>
 using namespace std;
 
+
 map<string, int> getformat()
 {
-    map<string, int> format ;
+    map<string, int> format;
     format.clear();
     format.insert(pair<string, int>("ADD", 3));
     format.insert(pair<string, int>("ADDF", 3));
@@ -72,7 +73,7 @@ map<string, int> getformat()
 
 map<string, string> getopcode()
 {
-    map<string, string> opcode ;
+    map<string, string> opcode;
     opcode.clear();
     opcode.insert(pair<string, string>("ADD", "18"));
     opcode.insert(pair<string, string>("ADDF", "58"));
@@ -136,24 +137,19 @@ map<string, string> getopcode()
     return opcode;
 }
 
-vector<string> noSpace(string line){
-   vector<string> in;
-   string word = "";
-   int j = 0;
-   while (line[j]==' ')
-    j++;
-   for (unsigned int i = j; i<=line.length(); i++){
-       if ((line[i] == ' ' && i>0 && line[i-1]!=' ') || (line[i] != ' ' && i==line.length())){
-           in.push_back(word);
-           word = "";
-   }
-       else if(line[i] != ' ')
-           word = word + line[i];
-   }
-   return in;
+vector<string> noSpace(string line) {
+    vector<string> in;
+    string word = "";
+    int j = 0;
+    while (line[j] == ' ')
+        j++;
+    for (unsigned int i = j; i <= line.length(); i++) {
+        if ((line[i] == ' ' && i > 0 && line[i - 1] != ' ') || (line[i] != ' ' && i == line.length())) {
+            in.push_back(word);
+            word = "";
+        }
+        else if (line[i] != ' ')
+            word = word + line[i];
+    }
+    return in;
 }
-
-
-
-
-
