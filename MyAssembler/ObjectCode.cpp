@@ -77,7 +77,7 @@ string ObjectCode::generateNI(char typeOfOperand) {
 string ObjectCode::generateTA(vector<string> operand) {
 	string TA = operand[1];
 	if (TA != "0000") {
-		int size = sizeof(operand);
+		int size = operand.size();
 		if (size > 2) {
 			X = true;
 		}
