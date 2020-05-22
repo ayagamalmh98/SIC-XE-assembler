@@ -222,7 +222,9 @@ public:
     }
 };
 
-void writefile(map<string, preobj> Map) {    //object file
+void writefile(map<string, preobj> Map,map<string,symbol_info>modification) {    //object file
+
+//(Map) is the map where we store all instructions
     
     ofstream file_;
     file_.open("myfile.txt");
@@ -238,7 +240,7 @@ void writefile(map<string, preobj> Map) {    //object file
         }
     }
 
-    for (it = Map.begin(); it != Map.end(); ++it) {
+    for (it = Map.begin(); it != Map.end(); ++it) {     //Header record
         if (Map[it->first].Operator == "start") {
             file_ << "H ";        //printing location counter
             file_ << Map[it->first].Label;
@@ -265,7 +267,7 @@ void writefile(map<string, preobj> Map) {    //object file
 
 
     it = Map.begin();
-    while (Map[it->first].Operator != "end") {
+    while (Map[it->first].Operator != "end") {      //Text records
         if (Map[it->first].Operator != "start") {
             int counter = 0; int length = 0;
             map<string, preobj>::iterator save = it;
@@ -275,7 +277,7 @@ void writefile(map<string, preobj> Map) {    //object file
             }
             cout << counter << endl;
             length = counter; counter = 0;
-            if (it != Map.end() && Map[it->first].Operator != "start" && Map[it->first].Operator != "end" && (counter + Map[it->first].Format) <= 30) {
+            if (it != Map.end() && Map[it->first].Operator != "start" && Map[it->first].Operator != "end" && Map[it->first].Operator != "byte" && Map[it->first].Operator != "word" && Map[it->first].Operator != "resb" && Map[it->first].Operator != "resw" && (counter + Map[it->first].Format) <= 30) {
                 file_ << "T 00";
                 file_ << it->first;
                 file_ << " ";
@@ -289,10 +291,42 @@ void writefile(map<string, preobj> Map) {    //object file
                 std::advance(it, 1);
             }
             while (it != Map.end() && Map[it->first].Operator != "start" && Map[it->first].Operator != "end" && (counter + Map[it->first].Format) <= 30) {
-                file_ << " ";
-                file_ << Map[it->first].Opcode;
-                counter += Map[it->first].Format;
-                std::advance(it, 1);
+                if (Map[it->first].Operator != "byte" || Map[it->first].Operator == "word" || Map[it->first].Operator == "resb" || Map[it->first].Operator == "resw") {
+                   vector<string>modify=modification[ Map[it->first].Label].reff;
+                   if (modify.size() == 0 && Map[it->first].Operator != "byte") {
+                       file_ << " ";
+                       file_ << Map[it->first].Opcode;
+                       counter += Map[it->first].Format;
+                       std::advance(it, 1);
+                   }
+                   else if (modify.size() == 0 && Map[it->first].Operator != "word") {
+                       file_ << " ";
+                       file_ << Map[it->first].Opcode;
+                       counter += Map[it->first].Format;
+                       std::advance(it, 1);
+                   }
+                   else if (modify.size() == 0) {
+                       std::advance(it, 1);
+                   }
+                   else {
+                       int j;
+                       for (j = 0; j < modify.size(); j++) {
+                           file_ << "\nT 00";
+                           file_<<modify.at(j);
+                           file_ << " 02 ";
+                           file_ << modification[Map[it->first].Label].address;
+                       }
+
+                       counter = 40;
+                       std::advance(it, 1);
+                   }
+                }
+                else {
+                    file_ << " ";
+                    file_ << Map[it->first].Opcode;
+                    counter += Map[it->first].Format;
+                    std::advance(it, 1);
+                }
             }
             file_ << "\n";
         }
@@ -304,7 +338,7 @@ void writefile(map<string, preobj> Map) {    //object file
 
     it = Map.begin();
     string raddr = it->first;
-    while (it != Map.end()) {
+    while (it != Map.end()) {        //end record
 
         if (Map[it->first].Operator == "end") {
             file_ << "E 00";
@@ -341,24 +375,32 @@ int main() {
     ob = { "","jeq","endfile","301015",3 };
     Map.insert(std::pair<string, preobj>("100C", ob));
     ob = { "","jsub","retadd","4820361",3 };
-    Map.insert(std::pair<string, preobj>("100F", ob));
-    ob = { "","j","cloop","3C1003",3 };
-    Map.insert(std::pair<string, preobj>("1012", ob));
-    ob = { "endfile","lda","retadd","00102A",3 };
-    Map.insert(std::pair<string, preobj>("1015", ob));
-    ob = { "","sta","buffer","0C1039",3 };
-    Map.insert(std::pair<string, preobj>("1018", ob));
-    ob = { "","lda","three","00102D",3 };
-    Map.insert(std::pair<string, preobj>("101B", ob));
-    ob = { "","sta","length","0C1036",3 };
-    Map.insert(std::pair<string, preobj>("101E", ob));
-    ob = { "","jsub","length","482061",3 };
-    Map.insert(std::pair<string, preobj>("1021", ob));
-    ob = { "","end","1000","",3 };
-    Map.insert(std::pair<string, preobj>("1024", ob));
 
-    writefile(Map);
-    
+    Map.insert(std::pair<string, preobj>("100F", ob));
+    ob = { "Length","word","3","4820361",3 };
+
+    Map.insert(std::pair<string, preobj>("1012", ob));
+    ob = { "","j","cloop","3C1003",3 };
+    Map.insert(std::pair<string, preobj>("1015", ob));
+    ob = { "endfile","lda","retadd","00102A",3 };
+    Map.insert(std::pair<string, preobj>("1018", ob));
+    ob = { "","sta","buffer","0C1039",3 };
+    Map.insert(std::pair<string, preobj>("101B", ob));
+    ob = { "","lda","three","00102D",3 };
+    Map.insert(std::pair<string, preobj>("101E", ob));
+    ob = { "","sta","length","0C1036",3 };
+    Map.insert(std::pair<string, preobj>("1021", ob));
+    ob = { "","jsub","length","482061",3 };
+    Map.insert(std::pair<string, preobj>("1024", ob));
+    ob = { "","end","1000","",3 };
+    Map.insert(std::pair<string, preobj>("1027", ob));
+
+    map<string, symbol_info> m;
+    vector <string> v;
+    v.push_back("ABCD");
+    struct symbol_info ob1 = { "0101",v };
+    m.insert(std::pair<string,symbol_info>("Length", ob1));
+    writefile(Map,m);
     pass1 e;
     e.readFile("assembler.txt");
    /* ObjectCode k;
