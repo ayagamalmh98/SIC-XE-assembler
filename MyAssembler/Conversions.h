@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 class Conversions
@@ -16,4 +17,5 @@ class Conversions
         string HexToBin(string hexdec);
         string decimal_to_binary(int n);
         string Format4Hex(string TAOpeanrd);
+        int StringToInt(string num);
 };

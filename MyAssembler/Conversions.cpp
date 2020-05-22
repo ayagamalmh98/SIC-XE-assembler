@@ -251,6 +251,7 @@ string Conversions::HexToBin(string hexdec)
         }
         i++;
     }
+
     return out;
 }
 
@@ -281,4 +282,11 @@ string Conversions::Format4Hex(string TAOpeanrd)
     }
     TAOpeanrd = add + TAOpeanrd;
     return TAOpeanrd;
+}
+
+
+int Conversions::StringToInt(string num) {
+    int i;
+    istringstream(num) >> i;
+    return i;
 }
