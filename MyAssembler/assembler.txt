@@ -1,3 +1,7 @@
-Hello   +ADD      #87
-Hi      MUL       #5
+COPY     START 1000 
+COMPR   F-B,A
+ADDR    PC/F,S
+ADDR      B*L,X
+COMPR  A,S+T
+
             
