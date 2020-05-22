@@ -51,12 +51,15 @@ public:
         else if (info.Operator == "RESW") {
             table.insert(pair<string, preobj>(locctr, info));
             Label_is_Found(info.Label, locctr);
-            locctr = toHex(toDec(locctr) + 3 * toDec(info.Operand));
+            locctr = toHex(toDec(locctr) + 3 * StringToInt(info.Operand));
         }
         else if (info.Operator == "RESB") {
             table.insert(pair<string, preobj>(locctr, info));
             Label_is_Found(info.Label, locctr);
-            locctr = toHex(toDec(locctr) + 3 * toDec(info.Operand));
+            cout << toDec(locctr) << endl;
+            cout << StringToInt(info.Operand) << endl;
+            locctr = toHex(toDec(locctr) + StringToInt(info.Operand));
+            cout << locctr << endl;
         }
         else if (info.Operator == "BYTE") {
             int len = info.Operand.size() - 3;
