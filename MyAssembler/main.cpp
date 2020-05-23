@@ -79,7 +79,7 @@ public:
             Label_is_Found(info.Label, locctr);
             locctr = toHex(toDec(locctr) + len);
         }
-        else if (info.Operator == "EQU") {
+         else if (info.Operator == "EQU") {
             char type = char(0);
             if (info.Operand[0] == '#' || info.Operand[0] == '@') {
                 type = info.Operand[0];
@@ -87,6 +87,7 @@ public:
             }
             vector<string> operand = split(info.Operand, ',');
             if (is_number(operand[0])) {
+                locctr = getTargetAddress(operand[0], type, locctr);
                 table.insert(pair<string, preobj>(locctr, info));
                 Label_is_Found(info.Label, operand[0]);
             }
