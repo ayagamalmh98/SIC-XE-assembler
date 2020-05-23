@@ -65,8 +65,8 @@ public:
             int len = info.Operand.size() - 3;
             if (info.Operand[0] == 'X') {
                 len /= 2;
-                for (int i = 2;i < info.Operand.size() - 1;i++) {
-                    info.objectCode+=(info.Operand[i]);
+                for (int i = 2; i < info.Operand.size() - 1; i++) {
+                    info.objectCode += (info.Operand[i]);
                 }
             }
             else if (info.Operand[0] == 'C') {
@@ -78,6 +78,29 @@ public:
             table.insert(pair<string, preobj>(locctr, info));
             Label_is_Found(info.Label, locctr);
             locctr = toHex(toDec(locctr) + len);
+        }
+        else if (info.Operator == "EQU") {
+            char type = char(0);
+            if (info.Operand[0] == '#' || info.Operand[0] == '@') {
+                type = info.Operand[0];
+                info.Operand.erase(0, 1);
+            }
+            vector<string> operand = split(info.Operand, ',');
+            if (is_number(operand[0])) {
+                table.insert(pair<string, preobj>(locctr, info));
+                Label_is_Found(info.Label, operand[0]);
+            }
+            else if (operand[0] == "*") {
+                table.insert(pair<string, preobj>(locctr, info));
+                Label_is_Found(info.Label, locctr);
+            }
+            else if (getTargetAddress(operand[0], type, locctr) != "NotFound") {
+                locctr = getTargetAddress(operand[0], type, locctr);
+                cout << "loctr =   " << locctr << '\n';
+                table.insert(pair<string, preobj>(locctr, info));
+                Label_is_Found(info.Label, locctr);
+                //locttr=
+            }
         }
         /* else if(info.Operator== "BASE") {
          }
@@ -106,13 +129,13 @@ public:
                 }
                 bool BASE = false;
                 string B = "";
-                info.objectCode = objectCode(Format, locctr, B, BASE, Opcode, split(info.Operand,','),type);
+                info.objectCode = objectCode(Format, locctr, B, BASE, Opcode, split(info.Operand, ','), type);
                 Label_is_Found(info.Label, locctr);
                 table.insert(pair<string, preobj>(locctr, info));
                 locctr = toHex(toDec(locctr) + Format);
             }
         }
-       printSymbols();
+        printSymbols();
         cout << "objectCode=" << info.objectCode << '\n' << '\n';
     }
 
@@ -148,5 +171,11 @@ public:
 int main() {
     pass1 e;
     e.readFile("assembler.txt");
+   /* ObjectCode k;
+    vector<string> data;
+    data.push_back("RDREC");
+    data.push_back("1036");
+    string o = k.objectCode(4,"","",false,"48",data,' ');
+    cout<<o<<endl;*/
     return 0;
 }
