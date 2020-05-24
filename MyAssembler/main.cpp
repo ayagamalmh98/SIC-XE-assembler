@@ -142,6 +142,7 @@ public:
          }
          else if (info.Operator == "END") {
             end = 1;
+            table.insert(pair<string, preobj>(locctr, info));
         }
         else {
             string Operator2 = info.Operator;
