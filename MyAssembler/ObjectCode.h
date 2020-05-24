@@ -19,7 +19,7 @@ class ObjectCode : public Formats
         string getTargetAddress(string var, char type, string loc);
         string getValue(string var, string loc);
         bool is_number(const std::string& s);
-
+        bool checkAllLabelsAreFound();
     private:
         bool X;
 

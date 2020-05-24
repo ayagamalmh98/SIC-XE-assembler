@@ -1,7 +1,7 @@
-COPY     START 1000 
-COMPR   F-B,A
-ADDR    PC/F,S
-ADDR      B*L,X
-COMPR  A,S+T
-
+COPY START 1000 
+LDA  LENGTH
+LDB  STAR
+STAR  WORD  3
+LENGTH  BYTE C'07'
+        JSUB  kol
             

@@ -36,7 +36,10 @@ void ObjectCode::printSymbols() {
 	map<string, symbol_info>::iterator itr;
 	for (itr = SYMTAB.begin(); itr != SYMTAB.end(); ++itr) {
 		cout << '\t' << itr->first
-			<< '\t' << itr->second.address << '\n';
+			<< '\t' << itr->second.address<< "   " ;
+		for (int i = 0;i < itr->second.reff.size();i++)
+			cout << itr->second.reff.at(i)<<"   ";
+		cout << '\n';
 	}
 }
 
@@ -208,4 +211,13 @@ string ObjectCode::getValue(string var, string loc) {
 bool ObjectCode::is_number(const std::string& s)
 {
 	return(strspn(s.c_str(), "-.0123456789") == s.size());
+}
+bool ObjectCode::checkAllLabelsAreFound() {
+	map<string, symbol_info>::iterator itr;
+	for (itr = SYMTAB.begin(); itr != SYMTAB.end(); ++itr) {
+		if (itr->second.address == "*")
+			return false;
+	}
+	return true;
+
 }

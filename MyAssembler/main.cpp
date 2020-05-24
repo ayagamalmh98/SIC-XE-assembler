@@ -42,6 +42,8 @@ public:
     }
 
     void calcObjectCode(preobj info) {
+        bool base = false;
+        string B = "";
         if (info.Operator == "WORD") {
             info.objectCode = toHex(toDec(info.Operand));
             table.insert(pair<string, preobj>(locctr, info));
@@ -103,10 +105,32 @@ public:
                 //locttr=
             }
         }
-        /* else if(info.Operator== "BASE") {
+         else if (info.Operator == "ORG") {
+            char type = char(0);
+            if (info.Operand[0] == '#' || info.Operand[0] == '@') {
+                type = info.Operand[0];
+                info.Operand.erase(0, 1);
+            }
+            string value = getTargetAddress(info.Operand, type, locctr);
+            if (value != "NotFound") 
+                locctr = value;
+            
+        }
+        else if(info.Operator== "BASE") {
+            char type = char(0);
+            if (info.Operand[0] == '#' || info.Operand[0] == '@') {
+                type = info.Operand[0];
+                info.Operand.erase(0, 1);
+            }
+              string value = getTargetAddress(info.Operand, type, locctr);
+              if (value != "NotFound") {
+                  base = true;
+                  B = value;
+              }
          }
          else if(info.Operator== "NOBASE") {
-         }*/
+            base = false;
+         }
         else {
             string Operator2 = info.Operator;
             if (Operator2[0] == '+')
@@ -128,9 +152,7 @@ public:
                     type = info.Operand[0];
                     info.Operand.erase(0, 1);
                 }
-                bool BASE = false;
-                string B = "";
-                info.objectCode = objectCode(Format, locctr, B, BASE, Opcode, split(info.Operand, ','), type);
+                info.objectCode = objectCode(Format, locctr, B, base, Opcode, split(info.Operand, ','), type);
                 Label_is_Found(info.Label, locctr);
                 table.insert(pair<string, preobj>(locctr, info));
                 locctr = toHex(toDec(locctr) + Format);
@@ -147,6 +169,10 @@ public:
         while (getline(myfile, line))
             handleLine(line);
         myfile.close();
+        bool e = checkAllLabelsAreFound();
+        //if e is true then write to object file
+        if (e == false)
+            cout << "you shouldnt use any label not declared";
     }
 
     struct preobj extract(vector<string> data) {
