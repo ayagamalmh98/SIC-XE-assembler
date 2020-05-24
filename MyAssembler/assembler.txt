@@ -3,5 +3,6 @@ LDA  LENGTH
 LDB  STAR
 STAR  WORD  3
 LENGTH  BYTE C'07'
-        JSUB  kol
+        END
+STAR  WORD  3
             

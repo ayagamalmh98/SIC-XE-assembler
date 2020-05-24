@@ -17,7 +17,8 @@ struct preobj {
     string Operator = "";
     string Operand = "";
     string objectCode = "";
-    int format = 0;
+    string Opcode = "";
+    int Format = 0;
 };
 
 

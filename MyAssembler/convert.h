@@ -11,4 +11,5 @@ int toDec(string s);
 string hex_char_to_bin(char c);
 string hexToBin(string hex);
 int toDecimal_digit(char a);
+string decTohexa(int n);
 #endif // CONVERT_H

@@ -221,3 +221,6 @@ bool ObjectCode::checkAllLabelsAreFound() {
 	return true;
 
 }
+map<string, symbol_info> ObjectCode::getSymbolTable() {
+	return SYMTAB;
+}

@@ -20,6 +20,7 @@ class ObjectCode : public Formats
         string getValue(string var, string loc);
         bool is_number(const std::string& s);
         bool checkAllLabelsAreFound();
+        map<string, symbol_info> getSymbolTable();
     private:
         bool X;
 
