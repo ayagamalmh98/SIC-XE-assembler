@@ -4,10 +4,9 @@
 #include <vector>
 using namespace std;
 
-
 map<string, int> getformat()
 {
-    map<string, int> format;
+    map<string, int> format ;
     format.clear();
     format.insert(pair<string, int>("ADD", 3));
     format.insert(pair<string, int>("ADDF", 3));
@@ -71,9 +70,76 @@ map<string, int> getformat()
     return format;
 }
 
+map<string, int> getNumOperands()
+{
+    map<string, int> NumOperands ;
+    NumOperands.clear();
+    NumOperands.insert(pair<string, int>("ADD", 1));
+    NumOperands.insert(pair<string, int>("ADDF", 1));
+    NumOperands.insert(pair<string, int>("ADDR", 2));
+    NumOperands.insert(pair<string, int>("AND", 1));
+    NumOperands.insert(pair<string, int>("CLEAR", 1));
+    NumOperands.insert(pair<string, int>("COMP", 1));
+    NumOperands.insert(pair<string, int>("COMPF", 1));
+    NumOperands.insert(pair<string, int>("COMPR", 2));
+    NumOperands.insert(pair<string, int>("DIV", 1));
+    NumOperands.insert(pair<string, int>("DIVF", 1));
+    NumOperands.insert(pair<string, int>("DIVR", 2));
+    NumOperands.insert(pair<string, int>("FIX", 0));
+    NumOperands.insert(pair<string, int>("FLOAT", 0));
+    NumOperands.insert(pair<string, int>("HIO", 0));
+    NumOperands.insert(pair<string, int>("J", 1));
+    NumOperands.insert(pair<string, int>("JEQ", 1));
+    NumOperands.insert(pair<string, int>("JGT", 1));
+    NumOperands.insert(pair<string, int>("JLT", 1));
+    NumOperands.insert(pair<string, int>("JSUB", 1));
+    NumOperands.insert(pair<string, int>("LDA", 1));
+    NumOperands.insert(pair<string, int>("LDB", 1));
+    NumOperands.insert(pair<string, int>("LDCH", 1));
+    NumOperands.insert(pair<string, int>("LDF", 1));
+    NumOperands.insert(pair<string, int>("LDL", 1));
+    NumOperands.insert(pair<string, int>("LDS", 1));
+    NumOperands.insert(pair<string, int>("LDT", 1));
+    NumOperands.insert(pair<string, int>("LDX", 1));
+    NumOperands.insert(pair<string, int>("LPS", 1));
+    NumOperands.insert(pair<string, int>("MUL", 1));
+    NumOperands.insert(pair<string, int>("MULF", 1));
+    NumOperands.insert(pair<string, int>("MULR", 2));
+    NumOperands.insert(pair<string, int>("NORM", 0));
+    NumOperands.insert(pair<string, int>("OR", 1));
+    NumOperands.insert(pair<string, int>("RD", 1));
+    NumOperands.insert(pair<string, int>("RMO", 2));
+    NumOperands.insert(pair<string, int>("RSUB", 0));
+    NumOperands.insert(pair<string, int>("SHIFTL", 2));
+    NumOperands.insert(pair<string, int>("SHIFTR", 2));
+    NumOperands.insert(pair<string, int>("SIO", 0));
+    NumOperands.insert(pair<string, int>("SSK", 1));
+    NumOperands.insert(pair<string, int>("STA", 1));
+    NumOperands.insert(pair<string, int>("STB", 1));
+    NumOperands.insert(pair<string, int>("STCH", 1));
+    NumOperands.insert(pair<string, int>("STF", 1));
+    NumOperands.insert(pair<string, int>("STI", 1));
+    NumOperands.insert(pair<string, int>("STL", 1));
+    NumOperands.insert(pair<string, int>("STS", 1));
+    NumOperands.insert(pair<string, int>("STSW", 1));
+    NumOperands.insert(pair<string, int>("STT", 1));
+    NumOperands.insert(pair<string, int>("STX", 1));
+    NumOperands.insert(pair<string, int>("SUB", 1));
+    NumOperands.insert(pair<string, int>("SUBF", 1));
+    NumOperands.insert(pair<string, int>("SUBR", 2));
+    NumOperands.insert(pair<string, int>("SVC", 1));
+    NumOperands.insert(pair<string, int>("TD", 1));
+    NumOperands.insert(pair<string, int>("TIO", 0));
+    NumOperands.insert(pair<string, int>("TIX", 1));
+    NumOperands.insert(pair<string, int>("TIXR", 1));
+    NumOperands.insert(pair<string, int>("WD", 1));
+    return NumOperands;
+}
+
+
 map<string, string> getopcode()
 {
-    map<string, string> opcode;
+    map<string, string> opcode ;
     opcode.clear();
     opcode.insert(pair<string, string>("ADD", "18"));
     opcode.insert(pair<string, string>("ADDF", "58"));
@@ -137,19 +203,24 @@ map<string, string> getopcode()
     return opcode;
 }
 
-vector<string> noSpace(string line) {
-    vector<string> in;
-    string word = "";
-    int j = 0;
-    while (line[j] == ' ')
-        j++;
-    for (unsigned int i = j; i <= line.length(); i++) {
-        if ((line[i] == ' ' && i > 0 && line[i - 1] != ' ') || (line[i] != ' ' && i == line.length())) {
-            in.push_back(word);
-            word = "";
-        }
-        else if (line[i] != ' ')
-            word = word + line[i];
-    }
-    return in;
+vector<string> noSpace(string line){
+   vector<string> in;
+   string word = "";
+   int j = 0;
+   while (line[j]==' ')
+    j++;
+   for (unsigned int i = j; i<=line.length(); i++){
+       if ((line[i] == ' ' && i>0 && line[i-1]!=' ') || (line[i] != ' ' && i==line.length())){
+           in.push_back(word);
+           word = "";
+   }
+       else if(line[i] != ' ')
+           word = word + line[i];
+   }
+   return in;
 }
+
+
+
+
+
