@@ -200,8 +200,10 @@ public:
           if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
             || (numOPerands[data.at(1)]==2 &&data.size() == 3 && data.at(2).find(",") == string::npos    )
             ||  (numOPerands[data.at(1)]==2 &&data.size() != 3 )
-            ||  (numOPerands[data.at(1)]==1 && data.at(2).find(",") != string::npos )   )
+            ||  (numOPerands[data.at(1)]==1 && data.at(2).find(",") != string::npos )   ){	  
                  cout << "error in operand";
+		  end=1;
+	  }
         //end program ?
 
         if (data.size() == 3) {
