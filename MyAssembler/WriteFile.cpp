@@ -51,9 +51,14 @@ void  writefile(map<string, preobj> Map, map<string, symbol_info>modification) {
         if (Map[it->first].Operator != "START") {
             int counter = 0; int length = 0;
             map<string, preobj>::iterator save = it;
-            while (save != Map.end() && Map[save->first].Operator != "STARt" && Map[save->first].Operator != "END" && (counter + Map[save->first].Format) <= 30) {
-                counter += Map[it->first].Format;
-                std::advance(save, 1);
+            while (save != Map.end() && Map[save->first].Operator != "START" && Map[save->first].Operator != "END" && (counter + Map[save->first].Format) <= 30) {
+                if ((Map[save->first].Operator == "BYTE" || Map[save->first].Operator == "WORD" || Map[save->first].Operator == "RESB" || Map[save->first].Operator == "RESW") && modification[Map[save->first].Label].reff.size()!=0) {
+                    save = Map.end();
+                }
+                else {
+                    counter += Map[save->first].Format;
+                    std::advance(save, 1);
+                }
             }
             cout << counter << endl;
             length = counter; counter = 0;
@@ -66,25 +71,25 @@ void  writefile(map<string, preobj> Map, map<string, symbol_info>modification) {
                 }
                 file_ << decTohexa(length);
                 file_ << " ";
-                file_ << Map[it->first].Opcode;
+                file_ << Map[it->first].objectCode;
                 counter += Map[it->first].Format;
                 std::advance(it, 1);
             }
             while (it != Map.end() && Map[it->first].Operator != "START" && Map[it->first].Operator != "END" && (counter + Map[it->first].Format) <= 30) {
-                if (Map[it->first].Operator != "BYTE" || Map[it->first].Operator == "WORD" || Map[it->first].Operator == "RESB" || Map[it->first].Operator == "RESW") {
+                if (Map[it->first].Operator == "BYTE" || Map[it->first].Operator == "WORD" || Map[it->first].Operator == "RESB" || Map[it->first].Operator == "RESW") {
                     vector<string>modify = modification[Map[it->first].Label].reff;
-                    if (modify.size() == 0 && Map[it->first].Operator != "BYTE") {
+                    if (modify.size() == 0 && (Map[it->first].Operator == "BYTE"|| Map[it->first].Operator == "WORD")) {
                         file_ << " ";
-                        file_ << Map[it->first].Opcode;
+                        file_ << Map[it->first].objectCode;
                         counter += Map[it->first].Format;
                         std::advance(it, 1);
                     }
-                    else if (modify.size() == 0 && Map[it->first].Operator != "WORD") {
-                        file_ << " ";
-                        file_ << Map[it->first].Opcode;
-                        counter += Map[it->first].Format;
-                        std::advance(it, 1);
-                    }
+                   // else if (modify.size() == 0 && Map[it->first].Operator != "WORD") {
+                     //   file_ << " ";
+                     //   file_ << Map[it->first].objectCode;
+                     //   counter += Map[it->first].Format;
+                     //   std::advance(it, 1);
+                  //  }
                     else if (modify.size() == 0) {
                         std::advance(it, 1);
                     }
@@ -103,7 +108,7 @@ void  writefile(map<string, preobj> Map, map<string, symbol_info>modification) {
                 }
                 else {
                     file_ << " ";
-                    file_ << Map[it->first].Opcode;
+                    file_ << Map[it->first].objectCode;
                     counter += Map[it->first].Format;
                     std::advance(it, 1);
                 }
