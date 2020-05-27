@@ -197,15 +197,16 @@ public:
         struct preobj info;
         string Label, Operator, Operand;
 
-          if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
+           if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
             || (numOPerands[data.at(1)]==2 &&data.size() == 3 && data.at(2).find(",") == string::npos    )
             ||  (numOPerands[data.at(1)]==2 &&data.size() != 3 )
-            ||  (numOPerands[data.at(1)]==1 && data.at(2).find(",") != string::npos )   ){	  
-                 cout << "error in operand";
-		  end=1;
-	  }
+            ||  (numOPerands[data.at(1)]==1 && data.at(2).find(",") != string::npos ) 
+            || (data.size() == 3 && (data.at(2).find("@") != string::npos || data.at(2).find("#") != string::npos )&&data.at(2).find(",") != string::npos )  ){
+                cout << "error in operand";
+                end=1;
+            }
         //end program ?
-
+else{
         if (data.size() == 3) {
             Label = data.at(0);
             Operator = data.at(1);
@@ -216,6 +217,7 @@ public:
             Operator = data.at(0);
             Operand = data.at(1);
         }
+	    /*
     std::for_each(Label.begin(), Label.end(), [](char & c) {
 		c = ::toupper(c);
 	});
@@ -225,10 +227,16 @@ public:
 	std::for_each(Operator.begin(), Operator.end(), [](char & c) {
 		c = ::toupper(c);
 	});
+	*/
+	     
+	std::transform(Label.begin(), Label.end(), Label.begin(), std::ptr_fun<int, int>(std::toupper));
+	std::transform(Operand.begin(), Operand.end(), Operand.begin(), std::ptr_fun<int, int>(std::toupper));
+	std::transform(Operator.begin(), Operator.end(), Operator.begin(), std::ptr_fun<int, int>(std::toupper));
         info.Label = Label;
         info.Operand =Operand;
         info.Operator = Operator;
         return info;
+    }
     }
 
 };
