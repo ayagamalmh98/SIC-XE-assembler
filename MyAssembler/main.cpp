@@ -22,10 +22,12 @@ class pass1 :public ObjectCode {
 private:
     map<string, int> format;
     map<string, string> opcode;
+    map<string, int> numOPerands;
 public:
     pass1() {
         format = getformat();
         opcode = getopcode();
+        numOPerands = getNumOperands();
         storeRegisters();
     }
     void handleLine(string line) {
@@ -121,9 +123,9 @@ public:
                 info.Operand.erase(0, 1);
             }
             string value = getTargetAddress(info.Operand, type, locctr);
-            if (value != "NotFound") 
+            if (value != "NotFound")
                 locctr = value;
-            
+
         }
         else if(info.Operator== "BASE") {
             char type = char(0);
@@ -194,6 +196,13 @@ public:
     struct preobj extract(vector<string> data) {
         struct preobj info;
         string Label, Operator, Operand;
+
+        if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
+            || (numOPerands[data.at(1)]==2 &&data.size() == 3 && data.at(2).find(",") == string::npos    )
+            ||  (numOPerands[data.at(1)]==2 &&data.size() != 3 )   )
+                 cout << "error in operand";
+        //end program ?
+
         if (data.size() == 3) {
             Label = data.at(0);
             Operator = data.at(1);
@@ -204,12 +213,21 @@ public:
             Operator = data.at(0);
             Operand = data.at(1);
         }
+    std::for_each(Label.begin(), Label.end(), [](char & c) {
+		c = ::toupper(c);
+	});
+	std::for_each(Operand.begin(), Operand.end(), [](char & c) {
+		c = ::toupper(c);
+	});
+	std::for_each(Operator.begin(), Operator.end(), [](char & c) {
+		c = ::toupper(c);
+	});
         info.Label = Label;
-        info.Operand = Operand;
+        info.Operand =Operand;
         info.Operator = Operator;
         return info;
     }
-    
+
 };
 
 
@@ -230,10 +248,8 @@ int main() {
     ob = { "","jeq","endfile","301015",3 };
     Map.insert(std::pair<string, preobj>("100C", ob));
     ob = { "","jsub","retadd","4820361",3 };
-
     Map.insert(std::pair<string, preobj>("100F", ob));
     ob = { "Length","word","3","4820361",3 };
-
     Map.insert(std::pair<string, preobj>("1012", ob));
     ob = { "","j","cloop","3C1003",3 };
     Map.insert(std::pair<string, preobj>("1015", ob));
@@ -249,7 +265,6 @@ int main() {
     Map.insert(std::pair<string, preobj>("1024", ob));
     ob = { "","end","1000","",3 };
     Map.insert(std::pair<string, preobj>("1027", ob));
-
     map<string, symbol_info> m;
     vector <string> v;
     v.push_back("ABCD"); v.push_back("982367"); v.push_back("df;ljwf");
