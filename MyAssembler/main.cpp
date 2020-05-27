@@ -197,9 +197,10 @@ public:
         struct preobj info;
         string Label, Operator, Operand;
 
-        if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
+          if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
             || (numOPerands[data.at(1)]==2 &&data.size() == 3 && data.at(2).find(",") == string::npos    )
-            ||  (numOPerands[data.at(1)]==2 &&data.size() != 3 )   )
+            ||  (numOPerands[data.at(1)]==2 &&data.size() != 3 )
+            ||  (numOPerands[data.at(1)]==1 && data.at(2).find(",") != string::npos )   )
                  cout << "error in operand";
         //end program ?
 
