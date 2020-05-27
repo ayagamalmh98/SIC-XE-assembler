@@ -234,43 +234,46 @@ public:
 
 
 int main() {
-    map<string, preobj> Map;
-    /*struct preobj ob = { "copy","start","1000","141033",3 };
+     map<string, preobj> Map;
+    struct preobj ob = { "copy","START","1000","141033","43",3 };
     Map.insert(std::pair<string, preobj>("", ob));
-    ob = { "first","stl","retadd","141033",3 };
+    ob = { "FIRST","STL","retadd","141033","43",3 };
     Map.insert(std::pair<string, preobj>("1000", ob));
-    ob = { "cloop","jsub","retadd","482039",3 };
+    ob = { "CLOOP","JSUB","retadd","482039","43",3 };
     Map.insert(std::pair<string, preobj>("1003", ob));
-    ob = { "","lda","retadd","001036",3 };
+    ob = { "","LDA","retadd","001036","43",3 };
     Map.insert(std::pair<string, preobj>("1006", ob));
-    ob = { "","comp","zero","281030",3 };
+    ob = { "","COMP","zero","281030","43",3 };
     Map.insert(std::pair<string, preobj>("1009", ob));
-    ob = { "","jeq","endfile","301015",3 };
+    ob = { "","JEQ","endfile","301015","43",3 };
     Map.insert(std::pair<string, preobj>("100C", ob));
-    ob = { "","jsub","retadd","4820361",3 };
+    ob = { "","JSUB","retadd","482036","43",3 };
+
     Map.insert(std::pair<string, preobj>("100F", ob));
-    ob = { "Length","word","3","4820361",3 };
+    ob = { "Length","WORD","3","4820361","43",3 };
+
     Map.insert(std::pair<string, preobj>("1012", ob));
-    ob = { "","j","cloop","3C1003",3 };
+    ob = { "","J","cloop","3C1003","43",3 };
     Map.insert(std::pair<string, preobj>("1015", ob));
-    ob = { "endfile","lda","retadd","00102A",3 };
+    ob = { "endfile","LDA","retadd","00102A","43",3 };
     Map.insert(std::pair<string, preobj>("1018", ob));
-    ob = { "","sta","buffer","0C1039",3 };
+    ob = { "","STA","buffer","0C1039","43",3 };
     Map.insert(std::pair<string, preobj>("101B", ob));
-    ob = { "","lda","three","00102D",3 };
+    ob = { "","LDA","three","00102D","43",3 };
     Map.insert(std::pair<string, preobj>("101E", ob));
-    ob = { "","sta","length","0C1036",3 };
+    ob = { "","STA","length","0C1036","43",3 };
     Map.insert(std::pair<string, preobj>("1021", ob));
-    ob = { "","jsub","length","482061",3 };
+    ob = { "","JSUB","length","482061","43",3 };
     Map.insert(std::pair<string, preobj>("1024", ob));
-    ob = { "","end","1000","",3 };
+    ob = { "","END","1000","","43",3 };
     Map.insert(std::pair<string, preobj>("1027", ob));
+
     map<string, symbol_info> m;
     vector <string> v;
-    v.push_back("ABCD"); v.push_back("982367"); v.push_back("df;ljwf");
+    v.push_back("1233"); v.push_back("9823"); v.push_back("4567");
     struct symbol_info ob1 = { "0101",v };
     m.insert(std::pair<string,symbol_info>("Length", ob1));
-    writefile(Map,m);*/
+    writefile(Map,m);
     pass1 e;
     e.readFile("assembler.txt");
    /* ObjectCode k;
