@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <iterator>
+#include <algorithm>
 #include <map>
 #include <vector>
 #include "ObjectCode.h"
