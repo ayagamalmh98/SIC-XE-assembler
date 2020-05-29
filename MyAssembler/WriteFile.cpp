@@ -4,33 +4,33 @@
 #include <iterator>
 #include<sstream>
 #include "convert.h"
-#include "structures.h"
+#include<vector>
 
-void  writefile(vector <preobj> Map, map<string, symbol_info>modification) {
-    //object file
+void  writefile(vector<preobj> Map, map<string, symbol_info>modification) {    //object file
     ofstream file_;
     file_.open("myfile.txt");
-    map<string, preobj>::iterator it;
-    vector<string> arr; int i = 0;
-    for (it = Map.begin(); it != Map.end(); ++it) {
+    //vector< preobj>::iterator it;
+    vector<string> arr;
+    int i = 0; int index;
+    for (index = 0; index < Map.size();index++) {
         if (i == 0) {
             i++;
         }
         else {
-            arr.push_back(it->first);
+            arr.push_back(Map.at(index).locctr);
             i++;
         }
     }
 
-    for (it = Map.begin(); it != Map.end(); ++it) {     //Header record
-        if (Map[it->first].Operator == "START") {
+    for (index = 0; index < Map.size();index++) {     //Header record
+        if (Map.at(index).Operator == "START") {
             file_ << "H ";        //printing location counter
-            file_ << Map[it->first].Label;
+            file_ << Map.at(index).Label;
             file_ << " 00";
-            file_ << Map[it->first].Operand;
+            file_ << Map.at(index).Operand;
             file_ << " 00";
             int num1, num2;
-            std::stringstream str_strm1(arr.at(0));
+            std::stringstream str_strm1(arr.at(0));     //calculate length of the program
             std::stringstream str_strm2(arr.at(Map.size() - 2));
             std::stringstream str_hex1;
             std::stringstream str_hex2;
@@ -48,97 +48,82 @@ void  writefile(vector <preobj> Map, map<string, symbol_info>modification) {
 
 
 
-    it = Map.begin();
-    while (Map[it->first].Operator != "END") {      //Text records
-        if (Map[it->first].Operator != "START") {
+    index = 0;
+    while (index < Map.size()) {      //Text records
+        if (Map.at(index).Operator != "START" && Map.at(index).objectCode!="") {
             int counter = 0; int length = 0;
-            map<string, preobj>::iterator save = it;
-            while (save != Map.end() && Map[save->first].Operator != "START" && Map[save->first].Operator != "END" && (counter + Map[save->first].Format) <= 30) {
-                if ((Map[save->first].Operator == "BYTE" || Map[save->first].Operator == "WORD" || Map[save->first].Operator == "RESB" || Map[save->first].Operator == "RESW") && modification[Map[save->first].Label].reff.size()!=0) {
-                    save = Map.end();
-                }
-                else {
-                    counter += Map[save->first].Format;
-                    std::advance(save, 1);
-                }
-            }
-            cout << counter << endl;
-            length = counter; counter = 0;
-            if (it != Map.end() && Map[it->first].Operator != "START" && Map[it->first].Operator != "END" && Map[it->first].Operator != "BYTE" && Map[it->first].Operator != "WORD" && Map[it->first].Operator != "RESB" && Map[it->first].Operator != "RESW" && (counter + Map[it->first].Format) <= 30) {
-                file_ << "T 00";
-                file_ << it->first;
-                file_ << " ";
-                if (decTohexa(length).size() < 2) {
-                    file_ << "0";
-                }
-                file_ << decTohexa(length);
-                file_ << " ";
-                file_ << Map[it->first].objectCode;
-                counter += Map[it->first].Format;
-                std::advance(it, 1);
-            }
-            while (it != Map.end() && Map[it->first].Operator != "START" && Map[it->first].Operator != "END" && (counter + Map[it->first].Format) <= 30) {
-                if (Map[it->first].Operator == "BYTE" || Map[it->first].Operator == "WORD" || Map[it->first].Operator == "RESB" || Map[it->first].Operator == "RESW") {
-                    vector<string>modify = modification[Map[it->first].Label].reff;
-                    if (modify.size() == 0 && (Map[it->first].Operator == "BYTE"|| Map[it->first].Operator == "WORD")) {
-                        file_ << " ";
-                        file_ << Map[it->first].objectCode;
-                        counter += Map[it->first].Format;
-                        std::advance(it, 1);
-                    }
-                   // else if (modify.size() == 0 && Map[it->first].Operator != "WORD") {
-                     //   file_ << " ";
-                     //   file_ << Map[it->first].objectCode;
-                     //   counter += Map[it->first].Format;
-                     //   std::advance(it, 1);
-                  //  }
-                    else if (modify.size() == 0) {
-                        std::advance(it, 1);
-                    }
-                    else {
-                        int j;
-                        for (j = 0; j < modify.size(); j++) {
-                            file_ << "\nT 00";
-                            file_ << modify.at(j);
-                            file_ << " 02 ";
-                            file_ << modification[Map[it->first].Label].address;
-                        }
+            int save = index;
+            while (save < Map.size() && Map.at(save).Operator != "START" && Map.at(save).Operator != "END" && (counter + (Map.at(save).objectCode.size() / 2)) <= 30) {
 
-                        counter = 40;
-                        std::advance(it, 1);
-                    }
+                if (Map.at(save).Label != "" && modification[Map.at(save).Label].reff.size() != 0) {
+                    save = Map.size();
                 }
                 else {
-                    file_ << " ";
-                    file_ << Map[it->first].objectCode;
-                    counter += Map[it->first].Format;
-                    std::advance(it, 1);
+                    counter += Map.at(save).objectCode.size()/2;
+                    save++;
                 }
             }
-            file_ << "\n";
-        }
+            if (counter == 0) {
+                vector<string>modify = modification[Map.at(index).Label].reff;
+                for (i = 0; i < modify.size(); i++) {
+                    file_ << "T 00";
+                    file_ << modify.at(i);
+                    file_ << " 02 ";
+                    file_ << modification[Map.at(index).Label].address;
+                    file_ << "\n";
+
+                }
+                index++;
+            }
+            else {
+                length = counter;
+                counter = 0;
+                if (index < Map.size() && Map.at(index).Operator != "START" && Map.at(index).Operator != "END" && (counter + (Map.at(index).objectCode.size() / 2)) <= length) {
+                    file_ << "T 00";
+                    file_ << Map.at(index).locctr;
+                    file_ << " ";
+                    if (decTohexa(length).size() < 2) {
+                        file_ << "0";
+                    }
+                    file_ << decTohexa(length);
+                    file_ << " ";
+                    file_ << Map.at(index).objectCode;
+                    counter += Map.at(index).objectCode.size() / 2;
+                    index++;
+                }
+                while (index < Map.size() && Map.at(index).Operator != "START" && Map.at(index).Operator != "END" && (counter + (Map.at(index).objectCode.size() / 2)) <= length) {
+                    
+                    file_ << " ";
+                    file_ << Map.at(index).objectCode;
+                    counter += Map.at(index).objectCode.size()/2;
+                    index++;
+                }
+                file_ << "\n";
+            }
+        
+    }
         else {
-            std::advance(it, 1);
+            index++;
         }
 
     }
 
-    it = Map.begin();
-    string raddr = it->first;
-    while (it != Map.end()) {        //end record
+    index = 0;
+    string raddr = Map.at(index).locctr;
+    while (index < Map.size()) {        //end record
 
-        if (Map[it->first].Operator == "END") {
+        if (Map.at(index).Operator == "END") {
             file_ << "E 00";
-            if (Map[it->first].Operand == "") {
+            if (Map.at(index).Operand == "") {
                 file_ << raddr;
             }
             else {
-                file_ << Map[it->first].Operand;
+                file_ << Map.at(index).Operand;
             }
             break;
         }
         else {
-            it++;
+            index++;
         }
 
     }
