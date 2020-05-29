@@ -95,7 +95,7 @@ string ObjectCode::objectCode(int format, string CurrentLOCCTR, string B, bool B
 		string opniHex = convertBinToHex(opni, false);
 		string TA = generateTA(operand, typeOfOperand, CurrentLOCCTR);
 		if (TA != "NotFound") {
-			string xbpeTAHex = setup(TA, X, B, BASE, format, CurrentLOCCTR);
+			string xbpeTAHex = setup(TA, X, B, BASE, format, CurrentLOCCTR,false);
 			ObjectCode = opniHex + xbpeTAHex;
 		}
 		else
