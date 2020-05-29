@@ -270,7 +270,59 @@ public:
 
 
 int main() {
+    /*vector< preobj> Map;
+    struct preobj ob;
+    ob = { "copy","START","1000","141033","43",3,"" };
+    Map.push_back(ob);
+
+     
+    ob = { "","STL","retadd","141033","43",3 ,"1000" };
+    Map.push_back(ob);
+    ob = { "","JSUB","retadd","482039","43",3 ,"1003" };
+    Map.push_back(ob);
+
+    ob = { "","LDA","retadd","001036","43",3,"1006" };
+    Map.push_back(ob);
+
+    ob = { "","COMP","zero","281030","43",3,"1009" };
+    Map.push_back(ob);
+    ob = { "","JEQ","endfile","301015","43",3,"100C" };
+    Map.push_back(ob);
+    ob = { "","JSUB","retadd","482036","43",3 ,"100F" };
+    Map.push_back(ob);
+
+    ob = { "Length","WORD","3","4820361","43",3 ,"1012" };
+    Map.push_back(ob);
+    
+    ob = { "","J","cloop","3C1003","43",3 ,"1015" };
+    Map.push_back(ob);
+
+    ob = { "endfile","LDA","retadd","00102A","43",3 ,"1018" };
+    Map.push_back(ob);
+
+    ob = { "","STA","buffer","0C1039","43",3 ,"101B" };
+    Map.push_back(ob);
+
+    ob = { "","LDA","three","00102D","43",3,"101E" };
+    Map.push_back(ob);
+
+    ob = { "","STA","length","0C1036","43",3 ,"1021" };
+    Map.push_back(ob);
+
+    ob = { "","JSUB","length","482061","43",3,"1024" };
+    Map.push_back(ob);
+
+    ob = { "","END","1000","","43",3 ,"1027" };
+    Map.push_back(ob);
+
+    map<string, symbol_info> m;
+    vector <string> v;
+    v.push_back("1233"); v.push_back("9823"); v.push_back("4567");
+    struct symbol_info ob1 = { "0101",v };
+    m.insert(std::pair<string,symbol_info>("Length", ob1));
+    writefile(Map,m);*/
     pass1 e;
     e.readFile("assembler.txt");
+
     return 0;
 }
