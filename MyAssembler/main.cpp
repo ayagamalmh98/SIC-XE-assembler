@@ -15,9 +15,10 @@
 #include "WriteFile.h"
 using namespace std;
 
-map<string, preobj> table;
+vector <preobj> table;
 string locctr = "0";
 string name = "";
+string oldLocctr = "0";
 class pass1 :public ObjectCode {
     int end = 0;
 private:
@@ -43,7 +44,8 @@ public:
             locctr = info.Operand;
             if (info.Label != "")
                 name = info.Label;
-            table.insert(pair<string, preobj>(locctr, info));
+            info.locctr = locctr;
+            table.push_back(info);
             return;
         }
         calcObjectCode(info);
@@ -58,17 +60,20 @@ public:
                 string temp = info.objectCode;
                 info.objectCode = "0" + temp;
             }
-            table.insert(pair<string, preobj>(locctr, info));
+            info.locctr = locctr;
+            table.push_back(info);
             Label_is_Found(info.Label, locctr);
             locctr = toHex(toDec(locctr) + 3);
         }
         else if (info.Operator == "RESW") {
-            table.insert(pair<string, preobj>(locctr, info));
+            info.locctr = locctr;
+            table.push_back(info);
             Label_is_Found(info.Label, locctr);
             locctr = toHex(toDec(locctr) + 3 * StringToInt(info.Operand));
         }
         else if (info.Operator == "RESB") {
-            table.insert(pair<string, preobj>(locctr, info));
+            info.locctr = locctr;
+            table.push_back(info);
             Label_is_Found(info.Label, locctr);
             cout << toDec(locctr) << endl;
             cout << StringToInt(info.Operand) << endl;
@@ -89,7 +94,8 @@ public:
                     info.objectCode.append(toHex((int)temp));
                 }
             }
-            table.insert(pair<string, preobj>(locctr, info));
+            info.locctr = locctr;
+            table.push_back(info);
             Label_is_Found(info.Label, locctr);
             locctr = toHex(toDec(locctr) + len);
         }
@@ -102,17 +108,20 @@ public:
             vector<string> operand = split(info.Operand, ',');
             if (is_number(operand[0])) {
                 locctr = getTargetAddress(operand[0], type, locctr);
-                table.insert(pair<string, preobj>(locctr, info));
+                info.locctr = locctr;
+                table.push_back(info);
                 Label_is_Found(info.Label, operand[0]);
             }
             else if (operand[0] == "*") {
-                table.insert(pair<string, preobj>(locctr, info));
+                info.locctr = locctr;
+                table.push_back(info);
                 Label_is_Found(info.Label, locctr);
             }
             else if (getTargetAddress(operand[0], type, locctr) != "NotFound") {
                 locctr = getTargetAddress(operand[0], type, locctr);
                 cout << "loctr =   " << locctr << '\n';
-                table.insert(pair<string, preobj>(locctr, info));
+                info.locctr = locctr;
+                table.push_back(info);
                 Label_is_Found(info.Label, locctr);
                 //locttr=
             }
@@ -123,10 +132,20 @@ public:
                 type = info.Operand[0];
                 info.Operand.erase(0, 1);
             }
-            string value = getTargetAddress(info.Operand, type, locctr);
-            if (value != "NotFound")
-                locctr = value;
-
+            if (is_number(info.Operand)) {
+                oldLocctr = locctr;
+                locctr = info.Operand;
+            }
+            else if (info.Operand == "") {
+                locctr = oldLocctr;
+            }
+            else {
+                string value = getTargetAddress(info.Operand, type, locctr);
+                if (value != "NotFound") {
+                    oldLocctr = locctr;
+                    locctr = value;
+                }
+            }
         }
         else if(info.Operator== "BASE") {
             char type = char(0);
@@ -145,7 +164,8 @@ public:
          }
          else if (info.Operator == "END") {
             end = 1;
-            table.insert(pair<string, preobj>(locctr, info));
+            info.locctr = locctr;
+            table.push_back(info);
         }
         else {
             string Operator2 = info.Operator;
@@ -171,7 +191,8 @@ public:
                 }
                 info.objectCode = objectCode(Format, locctr, B, base, Opcode, split(info.Operand, ','), type);
                 Label_is_Found(info.Label, locctr);
-                table.insert(pair<string, preobj>(locctr, info));
+                info.locctr = locctr;
+                table.push_back(info);
                 locctr = toHex(toDec(locctr) + Format);
             }
         }
@@ -190,24 +211,27 @@ public:
         //if e is true then write to object file
         if (e == false)
             cout << "you shouldnt use any label not declared";
-        else
-            writefile(table, getSymbolTable());
+        else {
+            //if(table.size()>0)
+               // writefile(table, getSymbolTable());
+        }
+            
     }
 
     struct preobj extract(vector<string> data) {
         struct preobj info;
         string Label, Operator, Operand;
 
-           if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
+           /*if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
             || (numOPerands[data.at(1)]==2 &&data.size() == 3 && data.at(2).find(",") == string::npos    )
             ||  (numOPerands[data.at(1)]==2 &&data.size() != 3 )
             ||  (numOPerands[data.at(1)]==1 && data.at(2).find(",") != string::npos ) 
             || (data.size() == 3 && (data.at(2).find("@") != string::npos || data.at(2).find("#") != string::npos )&&data.at(2).find(",") != string::npos )  ){
                 cout << "error in operand";
                 end=1;
-            }
+            }*/
         //end program ?
-else{
+//else{
         if (data.size() == 3) {
             Label = data.at(0);
             Operator = data.at(1);
@@ -230,15 +254,15 @@ else{
 	});
 	*/
 	     
-	std::transform(Label.begin(), Label.end(), Label.begin(), std::ptr_fun<int, int>(std::toupper));
-	std::transform(Operand.begin(), Operand.end(), Operand.begin(), std::ptr_fun<int, int>(std::toupper));
-	std::transform(Operator.begin(), Operator.end(), Operator.begin(), std::ptr_fun<int, int>(std::toupper));
+	//std::transform(Label.begin(), Label.end(), Label.begin(), std::ptr_fun<int, int>(std::toupper));
+	//std::transform(Operand.begin(), Operand.end(), Operand.begin(), std::ptr_fun<int, int>(std::toupper));
+	//std::transform(Operator.begin(), Operator.end(), Operator.begin(), std::ptr_fun<int, int>(std::toupper));
         info.Label = Label;
         info.Operand =Operand;
         info.Operator = Operator;
         return info;
     }
-    }
+  //  }
 
 };
 
@@ -246,53 +270,7 @@ else{
 
 
 int main() {
-     map<string, preobj> Map;
-    struct preobj ob = { "copy","START","1000","141033","43",3 };
-    Map.insert(std::pair<string, preobj>("", ob));
-    ob = { "FIRST","STL","retadd","141033","43",3 };
-    Map.insert(std::pair<string, preobj>("1000", ob));
-    ob = { "CLOOP","JSUB","retadd","482039","43",3 };
-    Map.insert(std::pair<string, preobj>("1003", ob));
-    ob = { "","LDA","retadd","001036","43",3 };
-    Map.insert(std::pair<string, preobj>("1006", ob));
-    ob = { "","COMP","zero","281030","43",3 };
-    Map.insert(std::pair<string, preobj>("1009", ob));
-    ob = { "","JEQ","endfile","301015","43",3 };
-    Map.insert(std::pair<string, preobj>("100C", ob));
-    ob = { "","JSUB","retadd","482036","43",3 };
-
-    Map.insert(std::pair<string, preobj>("100F", ob));
-    ob = { "Length","WORD","3","4820361","43",3 };
-
-    Map.insert(std::pair<string, preobj>("1012", ob));
-    ob = { "","J","cloop","3C1003","43",3 };
-    Map.insert(std::pair<string, preobj>("1015", ob));
-    ob = { "endfile","LDA","retadd","00102A","43",3 };
-    Map.insert(std::pair<string, preobj>("1018", ob));
-    ob = { "","STA","buffer","0C1039","43",3 };
-    Map.insert(std::pair<string, preobj>("101B", ob));
-    ob = { "","LDA","three","00102D","43",3 };
-    Map.insert(std::pair<string, preobj>("101E", ob));
-    ob = { "","STA","length","0C1036","43",3 };
-    Map.insert(std::pair<string, preobj>("1021", ob));
-    ob = { "","JSUB","length","482061","43",3 };
-    Map.insert(std::pair<string, preobj>("1024", ob));
-    ob = { "","END","1000","","43",3 };
-    Map.insert(std::pair<string, preobj>("1027", ob));
-
-    map<string, symbol_info> m;
-    vector <string> v;
-    v.push_back("1233"); v.push_back("9823"); v.push_back("4567");
-    struct symbol_info ob1 = { "0101",v };
-    m.insert(std::pair<string,symbol_info>("Length", ob1));
-    writefile(Map,m);
     pass1 e;
     e.readFile("assembler.txt");
-   /* ObjectCode k;
-    vector<string> data;
-    data.push_back("RDREC");
-    data.push_back("1036");
-    string o = k.objectCode(4,"","",false,"48",data,' ');
-    cout<<o<<endl;*/
     return 0;
 }

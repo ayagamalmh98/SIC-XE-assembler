@@ -19,6 +19,7 @@ struct preobj {
     string objectCode = "";
     string Opcode = "";
     int Format = 0;
+    string locctr = "";
 };
 
 

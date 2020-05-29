@@ -58,11 +58,6 @@ string Formats::Displacement(string TAOpeanrd, bool X, string Bcontent, bool BAS
 }
 
 
-string Formats::Format2()
-{
-    return string();
-}
-
 string Formats::Format3(string TAOpeanrd, bool X, string Bcontent, bool BASE, string CurrentLOCCTR, bool immediate)
 {
     string displacement = Displacement(TAOpeanrd, X, Bcontent, BASE, CurrentLOCCTR, immediate);
@@ -84,11 +79,8 @@ string Formats::Format4(string TAOpeanrd)
 
 string Formats::setup(string TAOpeanrd, bool X, string Bcontent, bool BASE, int format, string CurrentLOCCTR, bool immediate)
 {
-    if (format == 2)
-    {
-        return Format2();
-    }
-    else if (format == 3)
+   
+    if (format == 3)
     {
         e = 0;
         return Format3(TAOpeanrd, X, Bcontent, BASE, CurrentLOCCTR, immediate);

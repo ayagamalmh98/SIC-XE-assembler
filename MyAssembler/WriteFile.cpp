@@ -4,8 +4,10 @@
 #include <iterator>
 #include<sstream>
 #include "convert.h"
+#include "structures.h"
 
-void  writefile(map<string, preobj> Map, map<string, symbol_info>modification) {    //object file
+void  writefile(vector <preobj> Map, map<string, symbol_info>modification) {
+    //object file
     ofstream file_;
     file_.open("myfile.txt");
     map<string, preobj>::iterator it;
