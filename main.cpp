@@ -248,43 +248,59 @@ public:
             
     }
 
-   struct preobj extract(vector<string> data) {
+  struct preobj extract(vector<string> data) {
         struct preobj info;
         string Label, Operator, Operand;
-      
-        if (data.size() == 3) {
-            std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
-            std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
-            std::transform(data.at(2).begin(), data.at(2).end(), data.at(2).begin(), std::ptr_fun<int, int>(std::toupper));
+        if (data.at(0) != "START" && data.size()>1&& data.at(1) != "START") {
 
-            if (  (numOPerands[data.at(1)] == 2 && data.at(2).find(",") == string::npos)
-                || (numOPerands[data.at(1)] == 1 && strchr(data.at(2).c_str(), ','))
-                  ||  ( (strchr(data.at(2).c_str(), '@') || strchr(data.at(2).c_str(), '#')) && strchr(data.at(2).c_str(), ','))) {
-                cout << "error in operand\n";
-                cout << "operator  \" " << data.at(1) << " \" doen't match with operand \" " << data.at(2) << " \""<<' \n';
-                end = 1;
-                return info;
-            }
-        }
-        else if (data.size()==2 ){
-            std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
-            std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
-            if (
-                
-                 (numOPerands[data.at(0)] == 2 && data.at(1).find(",") == string::npos)
-              
-                || (numOPerands[data.at(0)] == 1 && strchr(data.at(1).c_str(), ','))
-                || ((strchr(data.at(1).c_str(), '@') || strchr(data.at(1).c_str(), '#')) && strchr(data.at(1).c_str(), ','))) {
-                cout << "error in operand\n";
+            if (data.size() >= 3&&data.at(2)!="" ){
+                std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::transform(data.at(2).begin(), data.at(2).end(), data.at(2).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::map<string, string>::iterator it = opcode.find(data.at(1));
                
-                cout << "operator  \" " << data.at(0) << " \" doen't match with operand \" " << data.at(1) << " \" " << '\n';
-                  
+
+                if ((it != opcode.end() && numOPerands[data.at(1)] == 0)
+                    ||(numOPerands[data.at(1)] == 2 && data.at(2).find(",") == string::npos)
+                    || (numOPerands[data.at(1)] == 1 && strchr(data.at(2).c_str(), ','))
+                    || ((strchr(data.at(2).c_str(), '@') || strchr(data.at(2).c_str(), '#')) && strchr(data.at(2).c_str(), ','))) {
+                    cout << "error in operand\n";
+                    cout << "operator  \" " << data.at(1) << " \" doen't match with operand \" " << data.at(2) << " \"" << '\n';
+                    end = 1;
+                    return info;
+                }
+            }
+            else if (data.size() >= 2&&data.at(1)!="") {
+                std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::map<string, string>::iterator it = opcode.find(data.at(1));
+                std::map<string, string>::iterator it1 = opcode.find(data.at(0));
+                if (  (it != opcode.end() && numOPerands[data.at(1)]!=0   )
+                    ||(it1 != opcode.end() && numOPerands[data.at(0)] == 0)
+
+                  ||  (numOPerands[data.at(0)] == 2 && data.at(1).find(",") == string::npos)
+
+                    || (numOPerands[data.at(0)] == 1 && strchr(data.at(1).c_str(), ','))
+                    || ((strchr(data.at(1).c_str(), '@') || strchr(data.at(1).c_str(), '#')) && strchr(data.at(1).c_str(), ','))) {
+                    cout << "error in operand\n";
+
+                    cout << "operator  \" " << data.at(0) << " \" doen't match with operand \" " << data.at(1) << " \" " << '\n';
+
 
                     end = 1;
                     return info;
-            }
+                }
 
+            }
+            else {
+                std::map<string, string>::iterator it = opcode.find(data.at(0));
+                if ((it != opcode.end() && numOPerands[data.at(1)] != 0))
+                    cout << "error in operand\n";
+
+            }
         }
+        
+        
         if (data.size() == 3) {
             Label = data.at(0);
             Operator = data.at(1);
@@ -295,13 +311,13 @@ public:
             Operator = data.at(0);
             Operand = data.at(1);
         }
-	  
+
         info.Label = Label;
-        info.Operand =Operand;
+        info.Operand = Operand;
         info.Operator = Operator;
         return info;
     }
- 
+
 
 };
 
