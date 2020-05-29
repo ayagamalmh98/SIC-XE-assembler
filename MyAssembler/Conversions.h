@@ -9,7 +9,7 @@ class Conversions
     public:
         void createMap(map<string, char>* um);
         string convertBinToHex(string bin, bool add);
-        string DecToHex(int n);
+        string DecToHex(int n, bool add);
         int HexToDecimal(string hexVal);
         char* StringToChar(string s);
         string CharToString(char* a);

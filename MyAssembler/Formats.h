@@ -10,11 +10,11 @@ class Formats : public Conversions
 {
     public:
         string XBPE();
-        string Displacement(string TAOpeanrd, bool X, string Bcontent, bool BASE, string CurrentLOCCTR);
+        string Displacement(string TAOpeanrd, bool X, string Bcontent, bool BASE, string CurrentLOCCTR, bool immediate);
         string Format2();
-        string Format3(string TAOpeanrd, bool X, string Bcontent, bool BASE, string CurrentLOCCTR);
+        string Format3(string TAOpeanrd, bool X, string Bcontent, bool BASE, string CurrentLOCCTR, bool immediate);
         string Format4(string TAOpeanrd);
-        string setup(string TAOpeanrd, bool X, string Bcontent, bool BASE, int format, string CurrentLOCCTR);
+        string setup(string TAOpeanrd, bool X, string Bcontent, bool BASE, int format, string CurrentLOCCTR, bool immediate);
     private:
         char x;
         char b = 0;

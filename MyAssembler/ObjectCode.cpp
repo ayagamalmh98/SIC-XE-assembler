@@ -36,9 +36,9 @@ void ObjectCode::printSymbols() {
 	map<string, symbol_info>::iterator itr;
 	for (itr = SYMTAB.begin(); itr != SYMTAB.end(); ++itr) {
 		cout << '\t' << itr->first
-			<< '\t' << itr->second.address<< "   " ;
-		for (int i = 0;i < itr->second.reff.size();i++)
-			cout << itr->second.reff.at(i)<<"   ";
+			<< '\t' << itr->second.address << "   ";
+		for (int i = 0; i < itr->second.reff.size(); i++)
+			cout << itr->second.reff.at(i) << "   ";
 		cout << '\n';
 	}
 }
@@ -74,8 +74,14 @@ string ObjectCode::objectCode(int format, string CurrentLOCCTR, string B, bool B
 		string opniHex = convertBinToHex(opni, false);
 		string TA = generateTA(operand, typeOfOperand, CurrentLOCCTR);
 		if (TA != "NotFound") {
-			string xbpeDisplacementHex = setup(TA, X, B, BASE, format, CurrentLOCCTR);
-			ObjectCode = opniHex + xbpeDisplacementHex;
+			if (typeOfOperand == '#' && is_number(operand.at(0))) {
+				string xbpeDisplacementHex = setup(operand.at(0), X, B, BASE, format, CurrentLOCCTR, true);
+				ObjectCode = opniHex + xbpeDisplacementHex;
+			}
+			else {
+				string xbpeDisplacementHex = setup(TA, X, B, BASE, format, CurrentLOCCTR, false);
+				ObjectCode = opniHex + xbpeDisplacementHex;
+			}
 		}
 		else
 			ObjectCode = opniHex.append("0000");

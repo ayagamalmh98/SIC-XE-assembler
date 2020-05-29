@@ -76,13 +76,11 @@ string Conversions::convertBinToHex(string bin, bool add)
     return hex;
 }
 
-string Conversions::DecToHex(int num)
+string Conversions::DecToHex(int num, bool add)
 {
     map<int, char> m;
-
     char digit = '0';
     char c = 'a';
-
     for (int i = 0; i <= 15; i++) {
         if (i < 10) {
             m[i] = digit++;
@@ -108,7 +106,13 @@ string Conversions::DecToHex(int num)
             n /= 16;
         }
     }
-
+    if (res.length() != 3 && add) {
+        string addd = "";
+        for (int i = res.length(); i < 3; i++) {
+            addd += "0";
+        }
+        res = addd+ res;
+    }
     return res;
 }
 
