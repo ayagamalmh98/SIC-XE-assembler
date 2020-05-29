@@ -32,9 +32,11 @@ public:
         numOPerands = getNumOperands();
         storeRegisters();
     }
-    void handleLine(string line) {
+   bool handleLine(string line) {
         vector<string> data = noSpace(line);
         struct preobj info = extract(data);
+	if (info.Operator=="")
+            return false;
         cout << "loctr =   " << locctr << '\n';
         cout << info.Label << "\n";
         cout << info.Operator << "\n";
@@ -46,10 +48,12 @@ public:
                 name = info.Label;
             info.locctr = locctr;
             table.push_back(info);
-            return;
+            return true;
         }
         calcObjectCode(info);
+	   return true;
     }
+	
 
     void calcObjectCode(preobj info) {
         bool base = false;
@@ -226,34 +230,61 @@ public:
         ifstream myfile;
         myfile.open(filename.c_str());
         string line;
-        while ((getline(myfile, line))&& (end==0))
-            handleLine(line);
+        while ((getline(myfile, line)) && (end == 0)) {
+            if (   !(strchr(line.c_str(), '.'))  )
+            error = handleLine(line);
+
+        }
+          
         myfile.close();
         bool e = checkAllLabelsAreFound();
         //if e is true then write to object file
         if (e == false)
             cout << "you shouldnt use any label not declared";
         else {
-            if(end==0)
+            if(end==0&&error==true)
                writefile(table, getSymbolTable());
         }
             
     }
 
-    struct preobj extract(vector<string> data) {
+   struct preobj extract(vector<string> data) {
         struct preobj info;
         string Label, Operator, Operand;
+      
+        if (data.size() == 3) {
+            std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
+            std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
+            std::transform(data.at(2).begin(), data.at(2).end(), data.at(2).begin(), std::ptr_fun<int, int>(std::toupper));
 
-           /*if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
-            || (numOPerands[data.at(1)]==2 &&data.size() == 3 && data.at(2).find(",") == string::npos    )
-            ||  (numOPerands[data.at(1)]==2 &&data.size() != 3 )
-            ||  (numOPerands[data.at(1)]==1 && data.at(2).find(",") != string::npos ) 
-            || (data.size() == 3 && (data.at(2).find("@") != string::npos || data.at(2).find("#") != string::npos )&&data.at(2).find(",") != string::npos )  ){
-                cout << "error in operand";
-                end=1;
-            }*/
-        //end program ?
-//else{
+            if (  (numOPerands[data.at(1)] == 2 && data.at(2).find(",") == string::npos)
+                || (numOPerands[data.at(1)] == 1 && strchr(data.at(2).c_str(), ','))
+                  ||  ( (strchr(data.at(2).c_str(), '@') || strchr(data.at(2).c_str(), '#')) && strchr(data.at(2).c_str(), ','))) {
+                cout << "error in operand\n";
+                cout << "operator  \" " << data.at(1) << " \" doen't match with operand \" " << data.at(2) << " \""<<' \n';
+                end = 1;
+                return info;
+            }
+        }
+        else if (data.size()==2 ){
+            std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
+            std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
+            if (
+                
+                 (numOPerands[data.at(0)] == 2 && data.at(1).find(",") == string::npos)
+              
+                || (numOPerands[data.at(0)] == 1 && strchr(data.at(1).c_str(), ','))
+                || ((strchr(data.at(1).c_str(), '@') || strchr(data.at(1).c_str(), '#')) && strchr(data.at(1).c_str(), ','))) {
+                cout << "error in operand\n";
+               
+                cout << "operator  \" " << data.at(0) << " \" doen't match with operand \" " << data.at(1) << " \" " << '\n';
+                  
+
+                    end = 1;
+                    return info;
+            }
+
+        }
         if (data.size() == 3) {
             Label = data.at(0);
             Operator = data.at(1);
@@ -264,27 +295,13 @@ public:
             Operator = data.at(0);
             Operand = data.at(1);
         }
-	    /*
-    std::for_each(Label.begin(), Label.end(), [](char & c) {
-		c = ::toupper(c);
-	});
-	std::for_each(Operand.begin(), Operand.end(), [](char & c) {
-		c = ::toupper(c);
-	});
-	std::for_each(Operator.begin(), Operator.end(), [](char & c) {
-		c = ::toupper(c);
-	});
-	*/
-	     
-	//std::transform(Label.begin(), Label.end(), Label.begin(), std::ptr_fun<int, int>(std::toupper));
-	//std::transform(Operand.begin(), Operand.end(), Operand.begin(), std::ptr_fun<int, int>(std::toupper));
-	//std::transform(Operator.begin(), Operator.end(), Operator.begin(), std::ptr_fun<int, int>(std::toupper));
+	  
         info.Label = Label;
         info.Operand =Operand;
         info.Operator = Operator;
         return info;
     }
-  //  }
+ 
 
 };
 
