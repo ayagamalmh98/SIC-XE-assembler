@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <map>
 #include <vector>
+#include <functional>
+#include <cctype>
 #include "ObjectCode.h"
 #include "convert.h"
 #include "operations.h"
@@ -13,6 +15,7 @@
 #include <string>
 #include "Conversions.h"
 #include "WriteFile.h"
+#include "ObjectCode.h"
 using namespace std;
 
 vector <preobj> table;
@@ -36,12 +39,9 @@ public:
    bool handleLine(string line) {
         vector<string> data = noSpace(line);
         struct preobj info = extract(data);
-	if (info.Operator=="")
+        if (info.Operator == "") 
             return false;
-        cout << "loctr =   " << locctr << '\n';
-        cout << info.Label << "\n";
-        cout << info.Operator << "\n";
-        cout << info.Operand << "\n";
+        
         //check if END
         if (info.Operator == "START") {
             locctr = info.Operand;
@@ -223,8 +223,6 @@ public:
                 locctr = toHex(toDec(locctr) + Format);
             }
         }
-        printSymbols();
-        cout << "objectCode=" << info.objectCode << '\n' << '\n';
     }
 
     void readFile(string filename) {
@@ -243,8 +241,12 @@ public:
         if (e == false)
             cout << "you shouldnt use any label not declared";
         else {
-            if(end==0&&error==true)
-               writefile(table, getSymbolTable());
+            if (end == 0) {
+                for (int i = 0;i < table.size();i++)
+                    cout << table.at(i).locctr << "               " << table.at(i).Label << "                " << table.at(i).Operator << "                " << table.at(i).Operand << "                  " << table.at(i).objectCode << '\n';
+                writefile(table, getSymbolTable());
+            }
+               
         }
             
     }
@@ -253,11 +255,10 @@ public:
         struct preobj info;
         string Label, Operator, Operand;
         if (data.at(0) != "START" && data.size()>1&& data.at(1) != "START") {
-
             if (data.size() >= 3&&data.at(2)!="" ){
-                //std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
-                //std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
-                //std::transform(data.at(2).begin(), data.at(2).end(), data.at(2).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::transform(data.at(2).begin(), data.at(2).end(), data.at(2).begin(), std::ptr_fun<int, int>(std::toupper));
                 std::map<string, string>::iterator it = opcode.find(data.at(1));
                
 
@@ -272,8 +273,8 @@ public:
                 }
             }
             else if (data.size() >= 2&&data.at(1)!="") {
-                //std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
-                //std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
                 std::map<string, string>::iterator it = opcode.find(data.at(1));
                 std::map<string, string>::iterator it1 = opcode.find(data.at(0));
                 if (  (it != opcode.end() && numOPerands[data.at(1)]!=0   )
@@ -300,8 +301,7 @@ public:
 
             }
         }
-        
-        
+     
         if (data.size() == 3) {
             Label = data.at(0);
             Operator = data.at(1);

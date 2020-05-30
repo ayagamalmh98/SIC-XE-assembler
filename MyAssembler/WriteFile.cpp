@@ -109,9 +109,8 @@ void  writefile(vector<preobj> Map, map<string, symbol_info>modification) {    /
     }
 
     index = 0;
-    string raddr = Map.at(index).locctr;
+    string raddr = Map.at(0).locctr;
     while (index < Map.size()) {        //end record
-
         if (Map.at(index).Operator == "END") {
             file_ << "E 00";
             if (Map.at(index).Operand == "") {
@@ -127,7 +126,4 @@ void  writefile(vector<preobj> Map, map<string, symbol_info>modification) {    /
         }
 
     }
-
-    file_.close();
-    std::cin.get();
 }
