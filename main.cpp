@@ -251,8 +251,8 @@ public:
   struct preobj extract(vector<string> data) {
         struct preobj info;
         string Label, Operator, Operand;
-	  if (data.size() == 1) {
-            cout << "Format 1 nor supported\n";
+        if (data.size() == 1||( data.size()==2&&(data.at(1)=="FIX" || data.at(1) == "FLOAT" || data.at(1) == "HIO" || data.at(1) == "NORM" || data.at(1) == "SIO" || data.at(1) == "TIO" )   )  ) {
+            cout << "Format 1 not supported\n";
             end = 1;
             return info;
 
