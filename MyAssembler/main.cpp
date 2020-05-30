@@ -21,6 +21,7 @@ string name = "";
 string oldLocctr = "0";
 class pass1 :public ObjectCode {
     int end = 0;
+    bool error;
 private:
     map<string, int> format;
     map<string, string> opcode;
@@ -32,9 +33,11 @@ public:
         numOPerands = getNumOperands();
         storeRegisters();
     }
-    void handleLine(string line) {
+   bool handleLine(string line) {
         vector<string> data = noSpace(line);
         struct preobj info = extract(data);
+	if (info.Operator=="")
+            return false;
         cout << "loctr =   " << locctr << '\n';
         cout << info.Label << "\n";
         cout << info.Operator << "\n";
@@ -46,35 +49,37 @@ public:
                 name = info.Label;
             info.locctr = locctr;
             table.push_back(info);
-            return;
+            return true;
         }
         calcObjectCode(info);
+	   return true;
     }
+	
 
     void calcObjectCode(preobj info) {
         bool base = false;
         string B = "";
         if (info.Operator == "WORD") {
-            info.objectCode = toHex(toDec(info.Operand));
+                info.objectCode = toHex(toDec(info.Operand));
             while (size(info.objectCode) < 6) {
-                string temp = info.objectCode;
-                info.objectCode = "0" + temp;
-            }
-            info.locctr = locctr;
-            table.push_back(info);
-            Label_is_Found(info.Label, locctr);
+                    string temp = info.objectCode;
+                    info.objectCode = "0" + temp;
+             }
+                info.locctr = locctr;
+                table.push_back(info);
+                Label_is_Found(info.Label, locctr, "R");
             locctr = toHex(toDec(locctr) + 3);
         }
         else if (info.Operator == "RESW") {
             info.locctr = locctr;
             table.push_back(info);
-            Label_is_Found(info.Label, locctr);
+            Label_is_Found(info.Label, locctr,"R");
             locctr = toHex(toDec(locctr) + 3 * StringToInt(info.Operand));
         }
         else if (info.Operator == "RESB") {
             info.locctr = locctr;
             table.push_back(info);
-            Label_is_Found(info.Label, locctr);
+            Label_is_Found(info.Label, locctr,"R");
             cout << toDec(locctr) << endl;
             cout << StringToInt(info.Operand) << endl;
             locctr = toHex(toDec(locctr) + StringToInt(info.Operand));
@@ -96,7 +101,7 @@ public:
             }
             info.locctr = locctr;
             table.push_back(info);
-            Label_is_Found(info.Label, locctr);
+            Label_is_Found(info.Label, locctr,"R");
             locctr = toHex(toDec(locctr) + len);
         }
          else if (info.Operator == "EQU") {
@@ -110,20 +115,24 @@ public:
                 locctr = getTargetAddress(operand[0], type, locctr);
                 info.locctr = locctr;
                 table.push_back(info);
-                Label_is_Found(info.Label, operand[0]);
+                Label_is_Found(info.Label, operand[0],"A");
             }
             else if (operand[0] == "*") {
                 info.locctr = locctr;
                 table.push_back(info);
-                Label_is_Found(info.Label, locctr);
+                Label_is_Found(info.Label, locctr,"R");
             }
-            else if (getTargetAddress(operand[0], type, locctr) != "NotFound") {
+            else if (getTargetAddress(operand[0], type, locctr) != "NotFound" ) {
+                if (getTargetAddress(operand[0], type, locctr) == "Error") {
+                    cout << "Error in calculating the expression";
+                    end = 1;
+                    return;
+                }
                 locctr = getTargetAddress(operand[0], type, locctr);
                 cout << "loctr =   " << locctr << '\n';
                 info.locctr = locctr;
                 table.push_back(info);
-                Label_is_Found(info.Label, locctr);
-                //locttr=
+                Label_is_Found(info.Label, locctr,"R");
             }
         }
          else if (info.Operator == "ORG") {
@@ -142,6 +151,11 @@ public:
             else {
                 string value = getTargetAddress(info.Operand, type, locctr);
                 if (value != "NotFound") {
+                    if (getTargetAddress(info.Operand, type, locctr) == "Error") {
+                        cout << "Error in calculating the expression";
+                        end = 1;
+                        return;
+                    }
                     oldLocctr = locctr;
                     locctr = value;
                 }
@@ -155,6 +169,11 @@ public:
             }
               string value = getTargetAddress(info.Operand, type, locctr);
               if (value != "NotFound") {
+                  if (getTargetAddress(info.Operand, type, locctr) == "Error") {
+                      cout << "Error in calculating the expression";
+                      end = 1;
+                      return;
+                  }
                   base = true;
                   B = value;
               }
@@ -190,7 +209,15 @@ public:
                     info.Operand.erase(0, 1);
                 }
                 info.objectCode = objectCode(Format, locctr, B, base, Opcode, split(info.Operand, ','), type);
-                Label_is_Found(info.Label, locctr);
+                if (info.objectCode == "Error") {
+                    cout << "Error calculating the expression";
+                    end = 1;
+                    return;
+                }
+                if(type=='#'&& is_number(info.Operand))
+                    Label_is_Found(info.Label, locctr,"A");
+                else
+                    Label_is_Found(info.Label, locctr, "R");
                 info.locctr = locctr;
                 table.push_back(info);
                 locctr = toHex(toDec(locctr) + Format);
@@ -204,34 +231,77 @@ public:
         ifstream myfile;
         myfile.open(filename.c_str());
         string line;
-        while ((getline(myfile, line))&& (end==0))
-            handleLine(line);
+        while ((getline(myfile, line)) && (end == 0)) {
+            if (   !(strchr(line.c_str(), '.'))  )
+            error = handleLine(line);
+
+        }
+          
         myfile.close();
         bool e = checkAllLabelsAreFound();
         //if e is true then write to object file
         if (e == false)
             cout << "you shouldnt use any label not declared";
         else {
-            //if(table.size()>0)
-               // writefile(table, getSymbolTable());
+            if(end==0&&error==true)
+               writefile(table, getSymbolTable());
         }
             
     }
 
-    struct preobj extract(vector<string> data) {
+  struct preobj extract(vector<string> data) {
         struct preobj info;
         string Label, Operator, Operand;
+        if (data.at(0) != "START" && data.size()>1&& data.at(1) != "START") {
 
-           /*if (( numOPerands[data.at(1)]==0 &&data.size() != 2 )|| (numOPerands[data.at(1)]==1 &&data.size() != 3 )
-            || (numOPerands[data.at(1)]==2 &&data.size() == 3 && data.at(2).find(",") == string::npos    )
-            ||  (numOPerands[data.at(1)]==2 &&data.size() != 3 )
-            ||  (numOPerands[data.at(1)]==1 && data.at(2).find(",") != string::npos ) 
-            || (data.size() == 3 && (data.at(2).find("@") != string::npos || data.at(2).find("#") != string::npos )&&data.at(2).find(",") != string::npos )  ){
-                cout << "error in operand";
-                end=1;
-            }*/
-        //end program ?
-//else{
+            if (data.size() >= 3&&data.at(2)!="" ){
+                //std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
+                //std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
+                //std::transform(data.at(2).begin(), data.at(2).end(), data.at(2).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::map<string, string>::iterator it = opcode.find(data.at(1));
+               
+
+                if ((it != opcode.end() && numOPerands[data.at(1)] == 0)
+                    ||(numOPerands[data.at(1)] == 2 && data.at(2).find(",") == string::npos)
+                    || (numOPerands[data.at(1)] == 1 && strchr(data.at(2).c_str(), ','))
+                    || ((strchr(data.at(2).c_str(), '@') || strchr(data.at(2).c_str(), '#')) && strchr(data.at(2).c_str(), ','))) {
+                    cout << "error in operand\n";
+                    cout << "operator  \" " << data.at(1) << " \" doen't match with operand \" " << data.at(2) << " \"" << '\n';
+                    end = 1;
+                    return info;
+                }
+            }
+            else if (data.size() >= 2&&data.at(1)!="") {
+                //std::transform(data.at(0).begin(), data.at(0).end(), data.at(0).begin(), std::ptr_fun<int, int>(std::toupper));
+                //std::transform(data.at(1).begin(), data.at(1).end(), data.at(1).begin(), std::ptr_fun<int, int>(std::toupper));
+                std::map<string, string>::iterator it = opcode.find(data.at(1));
+                std::map<string, string>::iterator it1 = opcode.find(data.at(0));
+                if (  (it != opcode.end() && numOPerands[data.at(1)]!=0   )
+                    ||(it1 != opcode.end() && numOPerands[data.at(0)] == 0)
+
+                  ||  (numOPerands[data.at(0)] == 2 && data.at(1).find(",") == string::npos)
+
+                    || (numOPerands[data.at(0)] == 1 && strchr(data.at(1).c_str(), ','))
+                    || ((strchr(data.at(1).c_str(), '@') || strchr(data.at(1).c_str(), '#')) && strchr(data.at(1).c_str(), ','))) {
+                    cout << "error in operand\n";
+
+                    cout << "operator  \" " << data.at(0) << " \" doen't match with operand \" " << data.at(1) << " \" " << '\n';
+
+
+                    end = 1;
+                    return info;
+                }
+
+            }
+            else {
+                std::map<string, string>::iterator it = opcode.find(data.at(0));
+                if ((it != opcode.end() && numOPerands[data.at(1)] != 0))
+                    cout << "error in operand\n";
+
+            }
+        }
+        
+        
         if (data.size() == 3) {
             Label = data.at(0);
             Operator = data.at(1);
@@ -242,27 +312,13 @@ public:
             Operator = data.at(0);
             Operand = data.at(1);
         }
-	    /*
-    std::for_each(Label.begin(), Label.end(), [](char & c) {
-		c = ::toupper(c);
-	});
-	std::for_each(Operand.begin(), Operand.end(), [](char & c) {
-		c = ::toupper(c);
-	});
-	std::for_each(Operator.begin(), Operator.end(), [](char & c) {
-		c = ::toupper(c);
-	});
-	*/
-	     
-	//std::transform(Label.begin(), Label.end(), Label.begin(), std::ptr_fun<int, int>(std::toupper));
-	//std::transform(Operand.begin(), Operand.end(), Operand.begin(), std::ptr_fun<int, int>(std::toupper));
-	//std::transform(Operator.begin(), Operator.end(), Operator.begin(), std::ptr_fun<int, int>(std::toupper));
+
         info.Label = Label;
-        info.Operand =Operand;
+        info.Operand = Operand;
         info.Operator = Operator;
         return info;
     }
-  //  }
+
 
 };
 
@@ -270,59 +326,7 @@ public:
 
 
 int main() {
-    /*vector< preobj> Map;
-    struct preobj ob;
-    ob = { "copy","START","1000","141033","43",3,"" };
-    Map.push_back(ob);
-
-     
-    ob = { "","STL","retadd","141033","43",3 ,"1000" };
-    Map.push_back(ob);
-    ob = { "","JSUB","retadd","482039","43",3 ,"1003" };
-    Map.push_back(ob);
-
-    ob = { "","LDA","retadd","001036","43",3,"1006" };
-    Map.push_back(ob);
-
-    ob = { "","COMP","zero","281030","43",3,"1009" };
-    Map.push_back(ob);
-    ob = { "","JEQ","endfile","301015","43",3,"100C" };
-    Map.push_back(ob);
-    ob = { "","JSUB","retadd","482036","43",3 ,"100F" };
-    Map.push_back(ob);
-
-    ob = { "Length","WORD","3","4820361","43",3 ,"1012" };
-    Map.push_back(ob);
-    
-    ob = { "","J","cloop","3C1003","43",3 ,"1015" };
-    Map.push_back(ob);
-
-    ob = { "endfile","LDA","retadd","00102A","43",3 ,"1018" };
-    Map.push_back(ob);
-
-    ob = { "","STA","buffer","0C1039","43",3 ,"101B" };
-    Map.push_back(ob);
-
-    ob = { "","LDA","three","00102D","43",3,"101E" };
-    Map.push_back(ob);
-
-    ob = { "","STA","length","0C1036","43",3 ,"1021" };
-    Map.push_back(ob);
-
-    ob = { "","JSUB","length","482061","43",3,"1024" };
-    Map.push_back(ob);
-
-    ob = { "","END","1000","","43",3 ,"1027" };
-    Map.push_back(ob);
-
-    map<string, symbol_info> m;
-    vector <string> v;
-    v.push_back("1233"); v.push_back("9823"); v.push_back("4567");
-    struct symbol_info ob1 = { "0101",v };
-    m.insert(std::pair<string,symbol_info>("Length", ob1));
-    writefile(Map,m);*/
     pass1 e;
     e.readFile("assembler.txt");
-
     return 0;
 }

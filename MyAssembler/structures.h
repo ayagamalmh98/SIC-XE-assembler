@@ -5,11 +5,9 @@
 #include <vector>
 using namespace std;
 
-
-#include<string>
-using namespace std;
 struct symbol_info {
     string address;
+    string flag="";
     vector<std::string> reff;
 };
 struct preobj {

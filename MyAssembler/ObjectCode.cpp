@@ -2,7 +2,7 @@
 #include "operations.h"
 #include "convert.h"
 #include "structures.h"
-
+#include"string"
 
 map<string, symbol_info> SYMTAB;
 void ObjectCode::storeRegisters() {
@@ -17,17 +17,19 @@ void ObjectCode::storeRegisters() {
 	printSymbols();
 }
 
-void ObjectCode::Label_is_Found(string label, string address) {
+void ObjectCode::Label_is_Found(string label, string address,string flag) {
 	if (label == "")
 		return;
 	if (SYMTAB.find(label) != SYMTAB.end()) {
 		cout << "varriable is Found";
 		SYMTAB.at(label).address = address;
+		SYMTAB.at(label).flag = flag;
 		// go to vector
 	}
 	else {
 		symbol_info n;
 		n.address = address;
+		n.flag = flag;
 		SYMTAB.insert(pair<string, symbol_info>(label, n));
 	}
 }
@@ -36,9 +38,9 @@ void ObjectCode::printSymbols() {
 	map<string, symbol_info>::iterator itr;
 	for (itr = SYMTAB.begin(); itr != SYMTAB.end(); ++itr) {
 		cout << '\t' << itr->first
-			<< '\t' << itr->second.address << "   ";
+			<< '\t' << itr->second.address << "   " << itr->second.flag;
 		for (int i = 0; i < itr->second.reff.size(); i++)
-			cout << itr->second.reff.at(i) << "   ";
+			cout << itr->second.reff.at(i) ;
 		cout << '\n';
 	}
 }
@@ -51,6 +53,8 @@ string ObjectCode::objectCode(int format, string CurrentLOCCTR, string B, bool B
 		// if operand is empty return error
 		ObjectCode = opCode;
 		string TA = getTargetAddress(operand[0], typeOfOperand, CurrentLOCCTR);
+		if (TA == "Error")
+			return "Error";
 		if (TA == "NotFound")
 			ObjectCode.append("0");
 		else
@@ -73,6 +77,8 @@ string ObjectCode::objectCode(int format, string CurrentLOCCTR, string B, bool B
 		string opni = opCode + ni;
 		string opniHex = convertBinToHex(opni, false);
 		string TA = generateTA(operand, typeOfOperand, CurrentLOCCTR);
+		if (TA == "Error")
+			return "Error";
 		if (TA != "NotFound") {
 			if (typeOfOperand == '#' && is_number(operand.at(0))) {
 				string xbpeDisplacementHex = setup(operand.at(0), X, B, BASE, format, CurrentLOCCTR, true);
@@ -94,6 +100,8 @@ string ObjectCode::objectCode(int format, string CurrentLOCCTR, string B, bool B
 		string opni = opCode + ni;
 		string opniHex = convertBinToHex(opni, false);
 		string TA = generateTA(operand, typeOfOperand, CurrentLOCCTR);
+		if (TA == "Error")
+			return "Error";
 		if (TA != "NotFound") {
 			string xbpeTAHex = setup(TA, X, B, BASE, format, CurrentLOCCTR,false);
 			ObjectCode = opniHex + xbpeTAHex;
@@ -157,37 +165,87 @@ string ObjectCode::generateTA(vector<string> operand, char type, string loc) {
 
 string ObjectCode::getTargetAddress(string var, char type, string loc) {
 	if (type == '#' && is_number(var))//immediate number
-		return var;
+		return toHex(toDec(var));
+	string var1="";
+	string var2="";
+	string flag1;
+	string flag2;
 	if (var.find("+") != std::string::npos) {
 		vector<string> temp = split(var, '+');
-		string var1 = getValue(temp.at(0), loc);
-		string var2 = getValue(temp.at(1), loc);
-		if (var1 == "NotFound" || var2 == "NotFound")
-			return "NotFound";
+		if (is_number(temp.at(0))) {
+			flag1 = "A";
+			var1 = StringToInt(temp.at(0));
+		}
+		if (is_number(temp.at(1))) {
+			flag2 = "A";
+			var2 = StringToInt(temp.at(1));
+		}
+		if (var1 == "") {
+			var1 = getValue(temp.at(0), loc);
+			if (var1 == "NotFound")
+				return "NotFound";
+			else
+				flag1 = SYMTAB.at(temp.at(0)).flag;
+			
+		}
+		if (var2 == "") {
+			var2 = getValue(temp.at(1), loc);
+			if (var2 == "NotFound")
+				return "NotFound";
+			else
+				flag2= SYMTAB.at(temp.at(1)).flag;
+		}
+		if (flag1 == "R" && flag2 == "R")
+			return "Error";
 		return toHex(HexToDecimal(var1) + HexToDecimal(var2));
 	}
 	else if (var.find("-") != std::string::npos) {
 		vector<string> temp = split(var, '-');
-		string var1 = getValue(temp.at(0), loc);
-		string var2 = getValue(temp.at(1), loc);
-		if (var1 == "NotFound" || var2 == "NotFound")
-			return "NotFound";
+		if (is_number(temp.at(0))) {
+			flag1 = "A";
+			var1 = StringToInt(temp.at(0));
+		}
+		if (is_number(temp.at(1))) {
+			flag2 = "A";
+			var2 = StringToInt(temp.at(1));
+		}
+		if (var1 == "") {
+			var1 = getValue(temp.at(0), loc);
+			if (var1 == "NotFound")
+				return "NotFound";
+			else
+				flag1 = SYMTAB.at(temp.at(0)).flag;
+
+		}
+		if (var2 == "") {
+			var2 = getValue(temp.at(1), loc);
+			if (var2 == "NotFound")
+				return "NotFound";
+			else
+				flag2 = SYMTAB.at(temp.at(1)).flag;
+		}
+		if (flag1 == "A" && flag2 == "R")
+			return "Error";
 		return toHex(HexToDecimal(var1) - HexToDecimal(var2));
 	}
 	else if (var.find("*") != std::string::npos) {
 		vector<string> temp = split(var, '*');
-		string var1 = getValue(temp.at(0), loc);
-		string var2 = getValue(temp.at(1), loc);
-		if (var1 == "NotFound" || var2 == "NotFound")
-			return "NotFound";
+		if (is_number(temp.at(0)) && is_number(temp.at(1))) {
+			var1 = StringToInt(temp.at(0));
+			var2 = StringToInt(temp.at(1));
+		}
+		else
+			return "Error";
 		return toHex(HexToDecimal(var1) * HexToDecimal(var2));
 	}
 	else if (var.find("/") != std::string::npos) {
 		vector<string> temp = split(var, '/');
-		string var1 = getValue(temp.at(0), loc);
-		string var2 = getValue(temp.at(1), loc);
-		if (var1 == "NotFound" || var2 == "NotFound")
-			return "NotFound";
+		if (is_number(temp.at(0)) && is_number(temp.at(1))) {
+			var1 = StringToInt(temp.at(0));
+			var2 = StringToInt(temp.at(1));
+		}
+		else
+			return "Error";
 		return toHex(HexToDecimal(var1) / HexToDecimal(var2));
 	}
 	else
@@ -198,7 +256,6 @@ string ObjectCode::getTargetAddress(string var, char type, string loc) {
 string ObjectCode::getValue(string var, string loc) {
 	if (SYMTAB.find(var) != SYMTAB.end()) {// varriable exists
 		if (SYMTAB.at(var).address != "*") {// varriable has an address
-			cout << "here is the varriable" << '\n';
 			return SYMTAB.at(var).address;
 		}
 		else { // varriable hasn't an address

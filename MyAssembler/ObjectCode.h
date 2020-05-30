@@ -10,7 +10,7 @@ class ObjectCode : public Formats
 {
 public:
     void storeRegisters();
-    void Label_is_Found(string label, string address);
+    void Label_is_Found(string label, string address,string flag);
     void printSymbols();
     string objectCode(int format, string CurrentLOCCTR, string B, bool BASE, string opCode, vector<string> operand, char typeOfOperand);
     vector<string> split(string exp, char delimiter);
